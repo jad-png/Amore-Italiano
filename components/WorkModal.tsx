@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { sendApplication } from "@/app/actions/send-application";
 
 export default function WorkModal() {
   const [open, setOpen] = useState(false);
@@ -19,7 +20,7 @@ export default function WorkModal() {
 
   if (!open) return null;
 
-  function submit(e: React.FormEvent<HTMLFormElement>) {
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     const form = e.currentTarget;
@@ -44,6 +45,11 @@ export default function WorkModal() {
       )
     ) {
       setError("Format accepté : PDF, DOC ou DOCX.");
+      return;
+    }
+    const result = await sendApplication(new FormData(form));
+    if ("error" in result) {
+      setError(result.error ?? "Impossible d'envoyer la candidature.");
       return;
     }
     setDone(true);
@@ -74,7 +80,7 @@ export default function WorkModal() {
               Grazie ❤️
             </div>
             <h3 className="serif mt-2 text-4xl">Candidature prête.</h3>
-            <p className="my-3 text-[#6e6a61]">
+            <p className="my-3 text-[#4a4741]">
               Le formulaire a été validé. Pour recevoir réellement les
               candidatures, il faudra connecter ce formulaire à un serveur ou un
               service d&apos;envoi.
@@ -97,7 +103,7 @@ export default function WorkModal() {
             >
               Travailler avec nous.
             </h2>
-            <p className="mb-6 text-[#6e6a61]">
+            <p className="mb-6 text-[#4a4741]">
               Vous souhaitez rejoindre notre équipe ? Envoyez-nous votre
               candidature.
             </p>
@@ -148,7 +154,7 @@ export default function WorkModal() {
                     required
                     className="font-normal"
                   />
-                  <small className="mt-1 block font-normal text-[#6e6a61]">
+                  <small className="mt-1 block font-normal text-[#4a4741]">
                     PDF, DOC ou DOCX · 5 Mo maximum
                   </small>
                 </span>
