@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 const links = [
@@ -14,9 +15,12 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 z-50 flex w-full items-center gap-3 border-b border-black/5 bg-[#f7f2e8]/90 px-[3%] py-3 backdrop-blur-xl md:gap-7 md:px-[4%]">
       <Link href="/" className="shrink-0">
-        <img
-          src="/images/amore-33.png"
+        <Image
+          src="/images/amore-33-png.webp"
           alt="Amore Italiano Safi"
+          width={940}
+          height={327}
+          sizes="(max-width: 768px) 78px, 190px"
           className="h-12 w-[78px] object-contain object-left md:h-[68px] md:w-[190px]"
         />
       </Link>
