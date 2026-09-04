@@ -10,24 +10,14 @@ export default function Home() {
     <>
       <section className="relative flex min-h-svh items-center overflow-hidden bg-[#171717] text-white">
         <Image
-          src="/images/amore-22.jpg"
+          src="/images/amore-22-jpg.webp"
           alt="Cuisine italienne Amore Italiano"
-          fill
+          width={1366}
+          height={2048}
           priority
-          className="object-cover"
-        />
-        <video
+          sizes="100vw"
           className="absolute inset-0 h-full w-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster="/images/amore-22.jpg"
-          aria-hidden="true"
-        >
-          <source src="/magnific_a-cinematic-professional-_EbjwQm7uuO.mp4" type="video/mp4" />
-        </video>
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20" />
         <div className="relative z-10 mx-auto w-[92%] max-w-[1180px] py-32">
           <Reveal>
@@ -68,7 +58,7 @@ export default function Home() {
         ].map((x) => (
           <div key={x[0]} className="text-center">
             <strong className="serif block text-4xl">{x[0]}</strong>
-            <span className="text-xs uppercase tracking-widest text-[#6e6a61]">
+            <span className="text-xs uppercase tracking-widest text-[#4a4741]">
               {x[1]}
             </span>
           </div>
@@ -91,18 +81,18 @@ export default function Home() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               [
-                "amore-22.jpg",
+                "amore-22-jpg.webp",
                 "Pizza",
                 "Des recettes italiennes pour toutes les envies.",
               ],
-              ["amore-23.jpg", "Caffè", "Une pause café au cœur de Safi."],
+              ["amore-23-jpg.webp", "Caffè", "Une pause café au cœur de Safi."],
               [
-                "amore-24.jpg",
+                "amore-24-jpg.webp",
                 "Gelato",
                 "La glace italienne pour finir en beauté.",
               ],
               [
-                "amore-25.jpg",
+                "amore-25-jpg.webp",
                 "Drinks",
                 "Jus, milk-shakes et boissons fraîches.",
               ],
@@ -111,14 +101,17 @@ export default function Home() {
                 key={x[1]}
                 className="overflow-hidden rounded-xl bg-[#eee8dc]"
               >
-                <img
+                <Image
                   src={`/images/${x[0]}`}
                   alt={x[1]}
+                  width={1367}
+                  height={2048}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="h-[250px] w-full object-cover"
                 />
                 <div className="p-5">
                   <h3 className="serif text-2xl">{x[1]}</h3>
-                  <p className="mt-1 text-sm text-[#6e6a61]">{x[2]}</p>
+                  <p className="mt-1 text-sm text-[#4a4741]">{x[2]}</p>
                 </div>
               </Reveal>
             ))}
@@ -146,9 +139,12 @@ export default function Home() {
       <section className="py-25">
         <div className="mx-auto grid w-[92%] max-w-[1180px] items-center gap-12 md:grid-cols-2">
           <Reveal>
-            <img
-              src="/images/amore-32.jpg"
+            <Image
+              src="/images/amore-32-jpg.webp"
               alt="Architecture marocaine à Safi"
+              width={960}
+              height={640}
+              sizes="(max-width: 768px) 92vw, 50vw"
               className="h-[400px] w-full rounded-xl object-cover md:h-[580px]"
             />
           </Reveal>
@@ -164,7 +160,7 @@ export default function Home() {
             <p className="serif my-6 text-2xl">
               « Une adresse italienne au cœur d&apos;une ville authentique. »
             </p>
-            <p className="text-[#6e6a61]">
+            <p className="text-[#4a4741]">
               Safi possède une identité particulière, entre médina, remparts,
               ateliers de potiers et océan Atlantique. C&apos;est ici
               qu&apos;Amore Italiano a choisi de s&apos;installer en 2019, au
