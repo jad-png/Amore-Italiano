@@ -14,7 +14,7 @@ export default function Page() {
         <h1 className="serif mt-4 max-w-3xl text-7xl leading-none">
           Travailler avec nous.
         </h1>
-        <p className="mt-7 max-w-xl text-lg text-[#6e6a61]">
+        <p className="mt-7 max-w-xl text-lg text-[#4a4741]">
           Vous souhaitez rejoindre notre équipe ? Ouvrez le formulaire de
           candidature et envoyez-nous votre CV.
         </p>
