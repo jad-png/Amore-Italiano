@@ -105,7 +105,7 @@ export function Location() {
           ].map(([h, c]) => (
             <Reveal key={h as string} className="rounded-xl bg-[#f7f2e8] p-8">
               <h3 className="serif mb-3 text-3xl">{h}</h3>
-              <p className="text-[#6e6a61]">{c}</p>
+              <p className="text-[#4a4741]">{c}</p>
             </Reveal>
           ))}
         </div>
