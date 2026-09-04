@@ -135,7 +135,7 @@ export default function MenuList() {
             >
               <div>
                 <h3 className="serif text-[21px]">{d[1]}</h3>
-                <p className="text-[13px] text-[#6e6a61]">{d[2]}</p>
+                <p className="text-[13px] text-[#4a4741]">{d[2]}</p>
               </div>
               <strong className="whitespace-nowrap text-[#a92e27]">
                 {d[3]}
