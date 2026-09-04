@@ -1,12 +1,16 @@
 import Link from "next/link";
+import Image from "next/image";
 export default function Footer() {
   return (
     <footer className="bg-[#171717] py-15 text-white">
       <div className="mx-auto flex w-[92%] max-w-[1180px] flex-col justify-between gap-7 md:flex-row">
         <div>
-          <img
-            src="/images/amore-33.png"
+          <Image
+            src="/images/amore-33-png.webp"
             alt="Amore Italiano Safi"
+            width={940}
+            height={327}
+            sizes="190px"
             className="h-[75px] w-[190px] object-contain brightness-0 invert"
           />
           <p>Fatto con tanto amore, dal 2013.</p>
