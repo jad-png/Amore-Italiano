@@ -20,7 +20,7 @@ export default function SectionHeader({
         </h2>
       </div>
       {children && (
-        <p className="max-w-[420px] text-[#6e6a61] max-md:mt-5">{children}</p>
+        <p className="max-w-[420px] text-[#4a4741] max-md:mt-5">{children}</p>
       )}
     </div>
   );
