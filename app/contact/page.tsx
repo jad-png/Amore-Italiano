@@ -16,7 +16,7 @@ export default function Page() {
           <br />
           attend. ❤️
         </h1>
-        <p className="my-7 max-w-xl text-lg text-[#6e6a61]">
+        <p className="my-7 max-w-xl text-lg text-[#4a4741]">
           Une question ? Une réservation ? N&apos;hésitez pas à nous contacter.
         </p>
         <div className="flex flex-wrap gap-3">
