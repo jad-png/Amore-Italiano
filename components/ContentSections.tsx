@@ -1,5 +1,6 @@
 import Reveal from "./Reveal";
 import SectionHeader from "./SectionHeader";
+import TrackedMapLink from "./TrackedMapLink";
 export function Story() {
   return (
     <section className="bg-[#596246] py-25 text-white">
@@ -73,13 +74,9 @@ export function Location() {
                 Maroc
                 <br />
                 <br />
-                <a
-                  className="inline-block rounded-full bg-[#a92e27] px-5 py-3 text-xs font-bold !text-white"
-                  target="_blank"
-                  href="https://www.google.com/maps/search/?api=1&query=Amore+Italiano+Safi"
-                >
+                <TrackedMapLink href="https://www.google.com/maps/search/?api=1&query=Amore+Italiano+Safi">
                   OUVRIR GOOGLE MAPS
-                </a>
+                </TrackedMapLink>
               </>,
             ],
             [
