@@ -9,7 +9,7 @@ const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 if (typeof window !== "undefined" && key && !posthog.__loaded) {
   posthog.init(key, {
     api_host: host,
-    capture_pageview: false,
+    capture_pageview: "history_change",
     capture_pageleave: true,
   });
 }
@@ -19,4 +19,3 @@ export default function Providers({
 }: Readonly<{ children: React.ReactNode }>) {
   return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
 }
-
