@@ -17,7 +17,9 @@ export default clerkMiddleware(async (auth, request) => {
     userId === process.env.ADMIN_USER_ID || metadata?.role === "admin";
 
   if (!isAdmin) {
-    return NextResponse.redirect(new URL("/admin/sign-in", request.url));
+    const signInUrl = new URL("/admin/sign-in", request.url);
+    signInUrl.searchParams.set("error", "forbidden");
+    return NextResponse.redirect(signInUrl);
   }
 });
 
