@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { sendApplication } from "@/app/actions/send-application";
+import { usePostHog } from "posthog-js/react";
 
 export default function WorkModal() {
+  const posthog = usePostHog();
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
@@ -13,10 +15,11 @@ export default function WorkModal() {
       setOpen(true);
       setDone(false);
       setError("");
+      posthog.capture("work_form_started");
     };
     window.addEventListener("open-work-modal", fn);
     return () => window.removeEventListener("open-work-modal", fn);
-  }, []);
+  }, [posthog]);
 
   if (!open) return null;
 
@@ -52,6 +55,7 @@ export default function WorkModal() {
       setError(result.error ?? "Impossible d'envoyer la candidature.");
       return;
     }
+    posthog.capture("work_form_submitted");
     setDone(true);
   }
 
