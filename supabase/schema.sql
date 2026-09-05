@@ -13,6 +13,7 @@ create table if not exists public.menu_items (
   name text not null,
   description text not null default '',
   price numeric not null,
+  display_order integer not null default 0,
   is_available boolean not null default true,
   image_url text,
   created_at timestamp with time zone not null default now()
