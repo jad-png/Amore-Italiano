@@ -14,11 +14,17 @@ export async function assertAdmin() {
 
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
-  const primaryEmail = user.primaryEmailAddress?.emailAddress;
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const hasAdminEmail = Boolean(
+    adminEmail &&
+      user.emailAddresses.some(
+        (email) => email.emailAddress.toLowerCase() === adminEmail,
+      ),
+  );
 
   const isAdmin =
     user.publicMetadata?.role === "admin" ||
-    primaryEmail === process.env.ADMIN_EMAIL;
+    hasAdminEmail;
 
   if (!isAdmin) {
     redirect("/admin/sign-in?error=forbidden");
