@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WorkModal from "@/components/WorkModal";
+import Providers from "@/components/Providers";
 
 const dmSans = DM_Sans({ subsets: ["latin"], display: "swap", variable: "--font-dm-sans", weight: ["400", "500", "600", "700"] });
 const playfairDisplay = Playfair_Display({ subsets: ["latin"], display: "swap", variable: "--font-playfair", weight: ["500", "600", "700"] });
@@ -47,14 +48,16 @@ export default function RootLayout({
     <html lang="fr">
       <body className={`${dmSans.variable} ${playfairDisplay.variable}`} suppressHydrationWarning>
         <ClerkProvider>
-          <Navbar />
-          <main className="page-shell">{children}</main>
-          <Footer />
-          <WorkModal />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
-          />
+          <Providers>
+            <Navbar />
+            <main className="page-shell">{children}</main>
+            <Footer />
+            <WorkModal />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
+            />
+          </Providers>
         </ClerkProvider>
       </body>
     </html>
