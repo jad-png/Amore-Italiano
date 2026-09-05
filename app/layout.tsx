@@ -2,13 +2,20 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import WorkModal from "@/components/WorkModal";
-import Providers from "@/components/Providers";
 
-const dmSans = DM_Sans({ subsets: ["latin"], display: "swap", variable: "--font-dm-sans", weight: ["400", "500", "600", "700"] });
-const playfairDisplay = Playfair_Display({ subsets: ["latin"], display: "swap", variable: "--font-playfair", weight: ["500", "600", "700"] });
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-dm-sans",
+  weight: ["400", "500", "600", "700"],
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-playfair",
+  weight: ["500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://amoreitaliano-safi.com"),
@@ -30,35 +37,13 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const restaurantSchema = {
-    "@context": "https://schema.org",
-    "@type": "Restaurant",
-    name: "Amore Italiano Safi",
-    description: "Pizza, café, gelato et cuisine italienne depuis 2013.",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "Label Gallery",
-      addressLocality: "Safi",
-      addressCountry: "MA",
-    },
-    telephone: ["+212524628897", "+212658663376", "+212762818508"],
-    openingHours: "Mo-Su 11:00-23:00",
-  };
   return (
     <html lang="fr">
-      <body className={`${dmSans.variable} ${playfairDisplay.variable}`} suppressHydrationWarning>
-        <ClerkProvider>
-          <Providers>
-            <Navbar />
-            <main className="page-shell">{children}</main>
-            <Footer />
-            <WorkModal />
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
-            />
-          </Providers>
-        </ClerkProvider>
+      <body
+        className={`${dmSans.variable} ${playfairDisplay.variable}`}
+        suppressHydrationWarning
+      >
+        <ClerkProvider>{children}</ClerkProvider>
       </body>
     </html>
   );
