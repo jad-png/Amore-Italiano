@@ -14,9 +14,14 @@ export async function assertAdmin() {
 
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
+  const primaryEmail = user.primaryEmailAddress?.emailAddress;
 
-  if (user.publicMetadata?.role !== "admin") {
-    redirect("/admin/sign-in");
+  const isAdmin =
+    user.publicMetadata?.role === "admin" ||
+    primaryEmail === process.env.ADMIN_EMAIL;
+
+  if (!isAdmin) {
+    redirect("/admin/sign-in?error=forbidden");
   }
 
   return userId;
