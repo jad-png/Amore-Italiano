@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePostHog } from "posthog-js/react";
 
 type Category = { id: string; name: string };
 type Item = {
@@ -13,8 +14,13 @@ type Item = {
 };
 
 export default function PublicMenu({ categories, items }: { categories: Category[]; items: Item[] }) {
+  const posthog = usePostHog();
   const [category, setCategory] = useState("all");
   const visibleItems = items.filter((item) => item.is_available && (category === "all" || item.category_id === category));
+
+  useEffect(() => {
+    posthog.capture("menu_viewed");
+  }, [posthog]);
 
   return (
     <>
