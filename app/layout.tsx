@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -45,14 +46,16 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={`${dmSans.variable} ${playfairDisplay.variable}`} suppressHydrationWarning>
-        <Navbar />
-        <main className="page-shell">{children}</main>
-        <Footer />
-        <WorkModal />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
-        />
+        <ClerkProvider>
+          <Navbar />
+          <main className="page-shell">{children}</main>
+          <Footer />
+          <WorkModal />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
+          />
+        </ClerkProvider>
       </body>
     </html>
   );
