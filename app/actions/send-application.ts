@@ -1,6 +1,8 @@
 "use server";
 
 import { Resend } from "resend";
+import { randomUUID } from "node:crypto";
+import { supabase } from "@/lib/supabase";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -69,6 +71,38 @@ export async function sendApplication(formData: FormData) {
     }
 
     const filename = sanitizeFilename(cvFile.name);
+    const extension = filename.includes(".") ? filename.split(".").pop() : "pdf";
+    const contentType = extension === "pdf"
+      ? "application/pdf"
+      : extension === "docx"
+        ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        : "application/msword";
+    const storagePath = `${new Date().toISOString().slice(0, 10)}/${randomUUID()}-${filename}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("resumes")
+      .upload(storagePath, content, { contentType, upsert: false });
+
+    if (uploadError) {
+      return { error: "Impossible d'enregistrer le CV." };
+    }
+
+    const { error: insertError } = await supabase.from("applications").insert({
+      nom,
+      prenom,
+      telephone,
+      ville,
+      adresse,
+      genre,
+      poste,
+      resume_url: storagePath,
+    });
+
+    if (insertError) {
+      await supabase.storage.from("resumes").remove([storagePath]);
+      return { error: "Impossible d'enregistrer la candidature." };
+    }
+
     const summary = [
       ["Nom", nom],
       ["Prénom", prenom],
