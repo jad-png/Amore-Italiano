@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePostHog } from "posthog-js/react";
+import Image from "next/image";
 
 type Category = { id: string; name: string };
 type Item = {
@@ -11,7 +12,16 @@ type Item = {
   description: string;
   price: number;
   is_available: boolean;
+  image_url: string | null;
 };
+
+function getLocalImagePath(value: string | null) {
+  const path = value?.trim();
+  if (!path) return null;
+  if (path.startsWith("/images/")) return path;
+  if (path.startsWith("public/images/")) return `/${path.slice("public/".length)}`;
+  return `/images/${path.replace(/^\/+/, "")}`;
+}
 
 export default function PublicMenu({ categories, items }: { categories: Category[]; items: Item[] }) {
   const posthog = usePostHog();
@@ -32,9 +42,24 @@ export default function PublicMenu({ categories, items }: { categories: Category
       </div>
       <div className="grid gap-x-7 md:grid-cols-2">
         {visibleItems.map((item) => (
-          <article key={item.id} className="flex justify-between gap-5 border-b border-[#ded8cc] py-5">
-            <div><h3 className="serif text-[21px]">{item.name}</h3><p className="text-[13px] text-[#4a4741]">{item.description}</p></div>
-            <strong className="whitespace-nowrap text-[#a92e27]">{item.price} DH</strong>
+          <article key={item.id} className="border-b border-[#ded8cc] py-5">
+            {getLocalImagePath(item.image_url) && (
+              <Image
+                src={getLocalImagePath(item.image_url) as string}
+                alt={item.name}
+                width={640}
+                height={420}
+                sizes="(max-width: 768px) 92vw, 45vw"
+                className="mb-4 h-52 w-full rounded-xl object-cover"
+              />
+            )}
+            <div className="flex justify-between gap-5">
+              <div>
+                <h3 className="serif text-[21px]">{item.name}</h3>
+                <p className="text-[13px] text-[#4a4741]">{item.description}</p>
+              </div>
+              <strong className="whitespace-nowrap text-[#a92e27]">{item.price} DH</strong>
+            </div>
           </article>
         ))}
       </div>
