@@ -52,10 +52,10 @@ export default async function AdminMenuPage() {
               <form action={updateMenuCategory.bind(null, category.id)} className="flex gap-2">
                 <input name="name" required defaultValue={category.name} className="min-w-0 flex-1 rounded-lg border border-[#ded8cc] p-2" />
                 <input name="display_order" type="number" defaultValue={category.display_order} className="w-20 rounded-lg border border-[#ded8cc] p-2" />
-                <button className="text-sm font-bold text-[#a92e27]">SAUVER</button>
+                <button className="text-sm font-bold text-[#a92e27]">ENREGISTRER</button>
               </form>
               <form action={deleteMenuCategory.bind(null, category.id)} className="mt-2">
-                <button className="text-xs text-[#4a4741]">Supprimer</button>
+                <button className="text-xs text-[#4a4741]">Supprimer la catégorie et ses plats</button>
               </form>
             </div>
           ))}
