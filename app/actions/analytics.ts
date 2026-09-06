@@ -219,21 +219,27 @@ export async function getSessionRecordings(): Promise<AnalyticsResult<SessionRec
   try {
     const { projectId } = getConfig();
     const payload = await posthogFetch<ApiPayload<RecordingApiRecord>>(
-      `/api/projects/${projectId}/session_recordings/?limit=10&ordering=-start_time`,
+      `/api/projects/${projectId}/session_recordings/?limit=10`,
+    );
+
+    const recordings = (payload.results ?? []).map((recording) => {
+      const properties = recording.person?.properties ?? recording.properties;
+      return {
+        id: recording.id,
+        duration: Number(recording.duration ?? recording.recording_duration) || 0,
+        startTime: recording.start_time ?? null,
+        location: property(properties, ["$geoip_city_name", "$geoip_country_name"]),
+        device: property(properties, ["$device_type", "$browser", "$os"]),
+        replayUrl: `${getConfig().host}/project/${projectId}/replay/${recording.id}`,
+      };
+    });
+
+    recordings.sort((a, b) =>
+      (b.startTime ?? "").localeCompare(a.startTime ?? ""),
     );
 
     return {
-      data: (payload.results ?? []).map((recording) => {
-        const properties = recording.person?.properties ?? recording.properties;
-        return {
-          id: recording.id,
-          duration: Number(recording.duration ?? recording.recording_duration) || 0,
-          startTime: recording.start_time ?? null,
-          location: property(properties, ["$geoip_city_name", "$geoip_country_name"]),
-          device: property(properties, ["$device_type", "$browser", "$os"]),
-          replayUrl: `${getConfig().host}/project/${projectId}/replay/${recording.id}`,
-        };
-      }),
+      data: recordings,
     };
   } catch (error) {
     console.error("[PostHog] Session recordings request failed:", error);
