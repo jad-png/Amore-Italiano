@@ -11,6 +11,7 @@ import {
 } from "@/app/actions/cms";
 import { assertAdmin } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
+import MenuImageField from "@/components/MenuImageField";
 
 export const metadata: Metadata = { title: "Gestion du menu" };
 export const dynamic = "force-dynamic";
@@ -69,7 +70,7 @@ export default async function AdminMenuPage() {
             </select>
             <input name="name" required placeholder="Nom du plat" className="rounded-lg border border-[#ded8cc] p-3" />
             <input name="price" required type="number" step="0.01" placeholder="Prix" className="rounded-lg border border-[#ded8cc] p-3" />
-            <input name="image_url" placeholder="URL de l'image" className="rounded-lg border border-[#ded8cc] p-3" />
+            <MenuImageField />
             <textarea name="description" placeholder="Description" className="rounded-lg border border-[#ded8cc] p-3 md:col-span-2" />
             <label className="flex items-center gap-2 text-sm md:col-span-2"><input name="is_available" type="checkbox" defaultChecked /> Disponible</label>
             <button className="rounded-full bg-[#a92e27] px-5 py-3 font-bold !text-white md:col-span-2">AJOUTER LE PLAT</button>
@@ -98,7 +99,7 @@ export default async function AdminMenuPage() {
                   </select>
                   <input name="name" required defaultValue={item.name} className="rounded-lg border border-[#ded8cc] p-2" />
                   <input name="price" required type="number" step="0.01" defaultValue={item.price} className="rounded-lg border border-[#ded8cc] p-2" />
-                  <input name="image_url" defaultValue={item.image_url ?? ""} placeholder="URL de l'image" className="rounded-lg border border-[#ded8cc] p-2" />
+                  <MenuImageField defaultValue={item.image_url ?? ""} />
                   <textarea name="description" defaultValue={item.description} className="rounded-lg border border-[#ded8cc] p-2 md:col-span-2" />
                   <label className="flex items-center gap-2 text-sm md:col-span-2"><input name="is_available" type="checkbox" defaultChecked={item.is_available} /> Disponible</label>
                   <button className="rounded-full bg-[#a92e27] px-5 py-2 text-sm font-bold !text-white md:w-fit">MODIFIER</button>
