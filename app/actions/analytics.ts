@@ -2,7 +2,7 @@
 
 import { assertAdmin } from "@/lib/auth";
 
-const DEFAULT_HOST = "https://us.i.posthog.com";
+const DEFAULT_HOST = "https://eu.i.posthog.com";
 const WINDOW = "30 DAY";
 
 type ApiPayload<T> = {
@@ -56,10 +56,13 @@ function getConfig() {
   return {
     apiKey: process.env.POSTHOG_PERSONAL_API_KEY,
     projectId:
-      process.env.PUBLIC_POSTHOG_PROJECT_ID || process.env.POSTHOG_PROJECT_ID,
+      process.env.NEXT_PUBLIC_POSTHOG_PROJECT_ID ||
+      process.env.PUBLIC_POSTHOG_PROJECT_ID ||
+      process.env.POSTHOG_PROJECT_ID,
     host: (
-      process.env.POSTHOG_API_HOST ||
+      process.env.NEXT_PUBLIC_POSTHOG_HOST ||
       process.env.PUBLIC_POSTHOG_HOST ||
+      process.env.POSTHOG_API_HOST ||
       DEFAULT_HOST
     ).replace(/\/$/, ""),
   };
@@ -69,13 +72,17 @@ function unavailable<T>(data: T): AnalyticsResult<T> {
   return {
     data,
     warning:
-      "PostHog analytics are not configured. Add POSTHOG_PERSONAL_API_KEY and PUBLIC_POSTHOG_PROJECT_ID.",
+      "PostHog analytics are not configured. Add POSTHOG_PERSONAL_API_KEY and NEXT_PUBLIC_POSTHOG_PROJECT_ID.",
   };
 }
 
 async function posthogFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const { apiKey, projectId, host } = getConfig();
-  if (!apiKey || !projectId) throw new Error("PostHog configuration is missing.");
+  if (!apiKey || !projectId) {
+    const error = new Error("PostHog configuration is missing.");
+    console.error("[PostHog] Missing API key or project ID:", error.message);
+    throw error;
+  }
 
   const response = await fetch(`${host}${path}`, {
     ...init,
@@ -88,6 +95,10 @@ async function posthogFetch<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
+    const message = await response.text();
+    console.error(
+      `[PostHog] Request failed with ${response.status} ${response.statusText}: ${message}`,
+    );
     throw new Error(`PostHog request failed with ${response.status}.`);
   }
 
@@ -148,7 +159,8 @@ export async function getOverviewMetrics(): Promise<AnalyticsResult<OverviewMetr
         bounceRate: Number(result.bounce_rate) || 0,
       },
     };
-  } catch {
+  } catch (error) {
+    console.error("[PostHog] Overview metrics request failed:", error);
     return unavailable(empty);
   }
 }
@@ -186,7 +198,8 @@ export async function getRecentVisitors(): Promise<AnalyticsResult<VisitorProfil
         lastSeenAt: person.last_seen_at ?? null,
       })),
     };
-  } catch {
+  } catch (error) {
+    console.error("[PostHog] Recent visitors request failed:", error);
     return unavailable([]);
   }
 }
@@ -218,11 +231,12 @@ export async function getSessionRecordings(): Promise<AnalyticsResult<SessionRec
           startTime: recording.start_time ?? null,
           location: property(properties, ["$geoip_city_name", "$geoip_country_name"]),
           device: property(properties, ["$device_type", "$browser", "$os"]),
-          replayUrl: `https://us.i.posthog.com/project/${projectId}/replay/${recording.id}`,
+          replayUrl: `${getConfig().host}/project/${projectId}/replay/${recording.id}`,
         };
       }),
     };
-  } catch {
+  } catch (error) {
+    console.error("[PostHog] Session recordings request failed:", error);
     return unavailable([]);
   }
 }
@@ -248,7 +262,8 @@ export async function getTopPages(): Promise<AnalyticsResult<TopPage[]>> {
         views: Number(row.views) || 0,
       })),
     };
-  } catch {
+  } catch (error) {
+    console.error("[PostHog] Top pages request failed:", error);
     return unavailable([]);
   }
 }
@@ -294,7 +309,8 @@ async function runConversionQuery(): Promise<AnalyticsResult<Pick<AnalyticsStats
           : 0,
       },
     };
-  } catch {
+  } catch (error) {
+    console.error("[PostHog] Conversion metrics request failed:", error);
     return unavailable(empty);
   }
 }
