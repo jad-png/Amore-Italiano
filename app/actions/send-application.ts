@@ -34,6 +34,25 @@ function hasValidMagicBytes(buffer: Buffer) {
   return isPdf || isDocx || isDoc;
 }
 
+async function ensureResumesBucket() {
+  const { data: bucket, error: lookupError } = await supabase.storage.getBucket("resumes");
+  if (bucket) return null;
+
+  const { error: createError } = await supabase.storage.createBucket("resumes", {
+    public: false,
+  });
+
+  if (createError && !createError.message.toLowerCase().includes("already exists")) {
+    console.error("[Application] Unable to initialize resumes bucket:", {
+      lookupError: lookupError?.message,
+      createError: createError.message,
+    });
+    return createError;
+  }
+
+  return null;
+}
+
 export async function sendApplication(formData: FormData) {
   try {
     const from = process.env.RESEND_FROM_EMAIL;
@@ -79,12 +98,22 @@ export async function sendApplication(formData: FormData) {
         : "application/msword";
     const storagePath = `${new Date().toISOString().slice(0, 10)}/${randomUUID()}-${filename}`;
 
+    const bucketError = await ensureResumesBucket();
+    if (bucketError) {
+      return { error: "Le stockage des CV est temporairement indisponible." };
+    }
+
     const { error: uploadError } = await supabase.storage
       .from("resumes")
       .upload(storagePath, content, { contentType, upsert: false });
 
     if (uploadError) {
-      return { error: "Impossible d'enregistrer le CV." };
+      console.error("[Application] CV upload failed:", {
+        message: uploadError.message,
+        name: uploadError.name,
+        status: uploadError.statusCode,
+      });
+      return { error: "Impossible d'enregistrer le CV. Vérifiez le stockage Supabase." };
     }
 
     const { error: insertError } = await supabase.from("applications").insert({
