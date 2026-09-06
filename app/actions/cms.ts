@@ -106,6 +106,12 @@ export async function updateMenuCategory(id: string, formData: FormData): Promis
 
 export async function deleteMenuCategory(id: string, _formData?: FormData): Promise<void> {
   await assertAdmin();
+  const { error: itemsError } = await supabase
+    .from("menu_items")
+    .delete()
+    .eq("category_id", id);
+  if (itemsError) throw new Error(itemsError.message);
+
   const { error } = await supabase.from("menu_categories").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/menu");
