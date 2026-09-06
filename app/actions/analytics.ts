@@ -18,7 +18,7 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
   const projectId = process.env.POSTHOG_PROJECT_ID;
   const apiHost = (
     process.env.POSTHOG_API_HOST ||
-    process.env.NEXT_PUBLIC_POSTHOG_HOST ||
+    process.env.PUBLIC_POSTHOG_HOST ||
     "https://us.posthog.com"
   ).replace(/\/$/, "");
 
