@@ -53,11 +53,15 @@ export default function MenuImageField({
           {uploading ? "ENVOI..." : "TÉLÉVERSER"}
         </button>
       </div>
+      <p className="text-xs text-[#4a4741]">
+        Exemple de chemin local : <code>/images/amore-22-jpg.webp</code>. Vous
+        pouvez aussi téléverser une nouvelle image directement ici.
+      </p>
       <input
         name="image_url"
         value={url}
         onChange={(event) => setUrl(event.target.value)}
-        placeholder="URL ou chemin de l'image"
+        placeholder="Ex : /images/amore-22-jpg.webp"
         className="w-full rounded-lg border border-[#ded8cc] p-3 text-sm"
       />
       {message && <p className="text-xs text-[#4a4741]">{message}</p>}
