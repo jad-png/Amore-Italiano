@@ -10,7 +10,7 @@ const key =
 const host =
   process.env.NEXT_PUBLIC_POSTHOG_HOST ||
   process.env.PUBLIC_POSTHOG_HOST ||
-  "https://eu.i.posthog.com";
+  "";
 
 if (typeof window !== "undefined" && key && !posthog.__loaded) {
   posthog.init(key, {
