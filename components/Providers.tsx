@@ -2,9 +2,11 @@
 
 import { PostHogProvider } from "posthog-js/react";
 import posthog from "posthog-js";
+import { useUser } from "@clerk/nextjs";
+import { useEffect } from "react";
 
-const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+const key = process.env.PUBLIC_POSTHOG_KEY;
+const host = process.env.PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 
 if (typeof window !== "undefined" && key && !posthog.__loaded) {
   posthog.init(key, {
@@ -17,5 +19,28 @@ if (typeof window !== "undefined" && key && !posthog.__loaded) {
 export default function Providers({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const { isLoaded, user } = useUser();
+
+  useEffect(() => {
+    if (!isLoaded || !key) return;
+
+    const configuredAdminUserId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
+    const configuredAdminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+      .split(",")
+      .map((email) => email.trim().toLowerCase())
+      .filter(Boolean);
+    const userEmail = user?.primaryEmailAddress?.emailAddress.toLowerCase();
+    const isAdmin =
+      user?.publicMetadata?.role === "admin" ||
+      user?.id === configuredAdminUserId ||
+      Boolean(userEmail && configuredAdminEmails.includes(userEmail));
+
+    if (isAdmin) {
+      posthog.opt_out_capturing();
+    } else if (posthog.has_opted_out_capturing()) {
+      posthog.opt_in_capturing();
+    }
+  }, [isLoaded, user]);
+
   return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
 }
