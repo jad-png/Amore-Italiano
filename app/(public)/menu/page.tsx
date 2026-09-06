@@ -12,7 +12,10 @@ export const dynamic = "force-dynamic";
 export default async function Page() {
   const [{ data: categoriesData }, { data: itemsData }] = await Promise.all([
     supabase.from("menu_categories").select("id, name").order("display_order"),
-    supabase.from("menu_items").select("id, category_id, name, description, price, is_available").order("created_at"),
+    supabase
+      .from("menu_items")
+      .select("id, category_id, name, description, price, is_available, image_url")
+      .order("created_at"),
   ]);
   const categories = categoriesData ?? [];
   const items = itemsData ?? [];
