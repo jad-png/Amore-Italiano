@@ -128,6 +128,12 @@ export async function sendApplication(formData: FormData) {
     });
 
     if (insertError) {
+      console.error("[Application] Database insert failed:", {
+        message: insertError.message,
+        details: insertError.details,
+        hint: insertError.hint,
+        code: insertError.code,
+      });
       await supabase.storage.from("resumes").remove([storagePath]);
       return { error: "Impossible d'enregistrer la candidature." };
     }
