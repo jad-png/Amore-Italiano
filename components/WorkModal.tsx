@@ -83,11 +83,10 @@ export default function WorkModal() {
             <div className="text-xs font-bold uppercase tracking-[.18em] text-[#a92e27]">
               Grazie ❤️
             </div>
-            <h3 className="serif mt-2 text-4xl">Candidature prête.</h3>
+            <h3 className="serif mt-2 text-4xl">Candidature envoyée.</h3>
             <p className="my-3 text-[#4a4741]">
-              Le formulaire a été validé. Pour recevoir réellement les
-              candidatures, il faudra connecter ce formulaire à un serveur ou un
-              service d&apos;envoi.
+              Votre candidature a bien été enregistrée. Notre équipe reviendra
+              vers vous si votre profil correspond à une opportunité.
             </p>
             <button
               onClick={() => setOpen(false)}
