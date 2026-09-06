@@ -5,8 +5,12 @@ import posthog from "posthog-js";
 import { useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
 
-const key = process.env.PUBLIC_POSTHOG_KEY;
-const host = process.env.PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+const key =
+  process.env.NEXT_PUBLIC_POSTHOG_KEY || process.env.PUBLIC_POSTHOG_KEY;
+const host =
+  process.env.NEXT_PUBLIC_POSTHOG_HOST ||
+  process.env.PUBLIC_POSTHOG_HOST ||
+  "https://eu.i.posthog.com";
 
 if (typeof window !== "undefined" && key && !posthog.__loaded) {
   posthog.init(key, {
