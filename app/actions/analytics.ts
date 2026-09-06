@@ -2,7 +2,6 @@
 
 import { assertAdmin } from "@/lib/auth";
 
-const DEFAULT_HOST = "https://eu.i.posthog.com";
 const WINDOW = "30 DAY";
 
 type ApiPayload<T> = {
@@ -63,7 +62,7 @@ function getConfig() {
       process.env.NEXT_PUBLIC_POSTHOG_HOST ||
       process.env.PUBLIC_POSTHOG_HOST ||
       process.env.POSTHOG_API_HOST ||
-      DEFAULT_HOST
+      ""
     ).replace(/\/$/, ""),
   };
 }
@@ -78,8 +77,10 @@ function unavailable<T>(data: T): AnalyticsResult<T> {
 
 async function posthogFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const { apiKey, projectId, host } = getConfig();
-  if (!apiKey || !projectId) {
-    const error = new Error("PostHog configuration is missing.");
+  if (!apiKey || !projectId || !host) {
+    const error = new Error(
+      "PostHog configuration is missing. Set the API key, project ID, and host.",
+    );
     console.error("[PostHog] Missing API key or project ID:", error.message);
     throw error;
   }
