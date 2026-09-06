@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { assertAdmin } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
@@ -11,6 +12,68 @@ function text(formData: FormData, key: string) {
 function number(formData: FormData, key: string, fallback = 0) {
   const value = Number(formData.get(key));
   return Number.isFinite(value) ? value : fallback;
+}
+
+const MAX_MENU_IMAGE_SIZE = 8 * 1024 * 1024;
+
+function hasValidImageSignature(buffer: Buffer, type: string) {
+  const isJpeg = type === "image/jpeg" && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+  const isPng = type === "image/png" && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  const isWebp = type === "image/webp" && buffer.subarray(0, 4).toString("ascii") === "RIFF" && buffer.subarray(8, 12).toString("ascii") === "WEBP";
+  const isAvif = type === "image/avif" && buffer.subarray(4, 12).toString("ascii").includes("ftyp");
+  return isJpeg || isPng || isWebp || isAvif;
+}
+
+async function ensureMenuImagesBucket() {
+  const { data: bucket } = await supabase.storage.getBucket("menu-images");
+  if (bucket) return null;
+
+  const { error } = await supabase.storage.createBucket("menu-images", {
+    public: true,
+  });
+  if (error && !error.message.toLowerCase().includes("already exists")) return error;
+  return null;
+}
+
+export async function uploadMenuImage(formData: FormData) {
+  await assertAdmin();
+  const file = formData.get("image");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Sélectionnez une image." };
+  }
+  if (file.size > MAX_MENU_IMAGE_SIZE) {
+    return { error: "L'image doit faire 8 Mo maximum." };
+  }
+
+  const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
+  if (!allowedTypes.has(file.type)) {
+    return { error: "Formats acceptés : JPG, PNG, WebP ou AVIF." };
+  }
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  if (!hasValidImageSignature(buffer, file.type)) {
+    return { error: "Le fichier image est invalide." };
+  }
+
+  const bucketError = await ensureMenuImagesBucket();
+  if (bucketError) {
+    console.error("[CMS] Unable to initialize menu-images bucket:", bucketError);
+    return { error: "Le stockage des images est indisponible." };
+  }
+
+  const extension = file.type.split("/")[1].replace("jpeg", "jpg");
+  const path = `menu/${new Date().toISOString().slice(0, 10)}/${randomUUID()}.${extension}`;
+  const { error: uploadError } = await supabase.storage
+    .from("menu-images")
+    .upload(path, buffer, { contentType: file.type, upsert: false });
+
+  if (uploadError) {
+    console.error("[CMS] Menu image upload failed:", uploadError);
+    return { error: "Impossible d'enregistrer l'image." };
+  }
+
+  const { data } = supabase.storage.from("menu-images").getPublicUrl(path);
+  return { success: true, url: data.publicUrl };
 }
 
 export async function createMenuCategory(formData: FormData): Promise<void> {
