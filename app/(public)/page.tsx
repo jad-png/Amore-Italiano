@@ -19,7 +19,7 @@ export default async function Home() {
       .order("display_order"),
     supabase
       .from("menu_items")
-      .select("id, category_id, name, description, price, is_available, image_url")
+      .select("id, category_id, name, description, price_small, price_medium, price_large, is_available, image_url")
       .order("display_order"),
   ]);
 
