@@ -110,7 +110,7 @@ export default async function AdminMenuPage() {
                     ].map(([name, label, value, required]) => (
                       <label key={name as string} className="grid gap-1 text-xs font-bold text-[#4a4741]">
                         {label as string} (DH)
-                        <input name={name as string} required={required as boolean} type="number" min="0" step="0.01" defaultValue={value as number | null | undefined} placeholder={required ? "25" : "Optionnel"} className="rounded-lg border border-[#ded8cc] p-2 text-sm font-normal" />
+                        <input name={name as string} required={required as boolean} type="number" min="0" step="0.01" defaultValue={(value as number | null | undefined) ?? undefined} placeholder={required ? "25" : "Optionnel"} className="rounded-lg border border-[#ded8cc] p-2 text-sm font-normal" />
                       </label>
                     ))}
                   </div>
