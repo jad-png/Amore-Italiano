@@ -2,8 +2,7 @@ import Link from "next/link";
 import Reveal from "@/components/Reveal";
 
 const heroVideoUrl =
-  process.env.NEXT_PUBLIC_HERO_VIDEO_URL ||
-  "";
+  process.env.NEXT_PUBLIC_HERO_VIDEO_URL;
 
 export default function Hero() {
   return (
