@@ -12,12 +12,13 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(
+    () => typeof document !== "undefined" && !document.getElementById("hero"),
+  );
 
   useEffect(() => {
     const hero = document.getElementById("hero");
     if (!hero) {
-      setScrolled(true);
       return;
     }
 
