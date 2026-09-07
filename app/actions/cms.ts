@@ -16,8 +16,24 @@ function number(formData: FormData, key: string, fallback = 0) {
 
 function menuPrice(formData: FormData, key: string) {
   const value = number(formData, key, -1);
-  if (value < 0) throw new Error("Les trois prix du plat sont obligatoires.");
+  if (value < 0) throw new Error("Le prix du plat est obligatoire.");
   return value;
+}
+
+function optionalMenuPrice(formData: FormData, key: string) {
+  const raw = text(formData, key);
+  if (!raw) return null;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0) {
+    throw new Error("Le prix doit être un nombre positif.");
+  }
+  return value;
+}
+
+function validatePriceSet(priceMedium: number | null, priceLarge: number | null) {
+  if ((priceMedium === null) !== (priceLarge === null)) {
+    throw new Error("Renseignez les prix M et L ensemble, ou laissez-les vides pour un prix unique.");
+  }
 }
 
 const MAX_MENU_IMAGE_SIZE = 8 * 1024 * 1024;
@@ -167,14 +183,15 @@ export async function createMenuItem(formData: FormData): Promise<void> {
   if (!name || !categoryId) throw new Error("Le nom et la catégorie sont obligatoires.");
 
   const priceSmall = menuPrice(formData, "price_small");
-  const priceMedium = menuPrice(formData, "price_medium");
-  const priceLarge = menuPrice(formData, "price_large");
+  const priceMedium = optionalMenuPrice(formData, "price_medium");
+  const priceLarge = optionalMenuPrice(formData, "price_large");
+  validatePriceSet(priceMedium, priceLarge);
 
   const { error } = await supabase.from("menu_items").insert({
     category_id: categoryId,
     name,
     description: text(formData, "description"),
-    price: priceMedium,
+    price: priceMedium ?? priceSmall,
     price_small: priceSmall,
     price_medium: priceMedium,
     price_large: priceLarge,
@@ -193,14 +210,15 @@ export async function updateMenuItem(id: string, formData: FormData): Promise<vo
   if (!name || !categoryId) throw new Error("Le nom et la catégorie sont obligatoires.");
 
   const priceSmall = menuPrice(formData, "price_small");
-  const priceMedium = menuPrice(formData, "price_medium");
-  const priceLarge = menuPrice(formData, "price_large");
+  const priceMedium = optionalMenuPrice(formData, "price_medium");
+  const priceLarge = optionalMenuPrice(formData, "price_large");
+  validatePriceSet(priceMedium, priceLarge);
 
   const update = {
     category_id: categoryId,
     name,
     description: text(formData, "description"),
-    price: priceMedium,
+    price: priceMedium ?? priceSmall,
     price_small: priceSmall,
     price_medium: priceMedium,
     price_large: priceLarge,
@@ -211,8 +229,8 @@ export async function updateMenuItem(id: string, formData: FormData): Promise<vo
     description: string;
     price: number;
     price_small: number;
-    price_medium: number;
-    price_large: number;
+    price_medium: number | null;
+    price_large: number | null;
     image_url: string | null;
     is_available?: boolean;
   };
