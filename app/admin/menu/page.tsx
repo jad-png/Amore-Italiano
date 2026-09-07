@@ -2,16 +2,15 @@ import type { Metadata } from "next";
 import {
   createMenuCategory,
   createMenuItem,
-  deleteMenuCategory,
   deleteMenuItem,
   reorderMenuItems,
   toggleMenuItemAvailability,
-  updateMenuCategory,
   updateMenuItem,
 } from "@/app/actions/cms";
 import { assertAdmin } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import MenuImageField from "@/components/MenuImageField";
+import CategoryManager from "@/components/admin/CategoryManager";
 
 export const metadata: Metadata = { title: "Gestion du menu" };
 export const dynamic = "force-dynamic";
@@ -44,21 +43,12 @@ export default async function AdminMenuPage() {
           <h2 className="serif mb-4 text-3xl">Catégories</h2>
           <form action={createMenuCategory} className="mb-6 grid gap-3 rounded-xl bg-white p-5">
             <input name="name" required placeholder="Nouvelle catégorie" className="rounded-lg border border-[#ded8cc] p-3" />
-            <input name="display_order" type="number" defaultValue="0" placeholder="Ordre" className="rounded-lg border border-[#ded8cc] p-3" />
             <button className="rounded-full bg-[#a92e27] px-5 py-3 font-bold !text-white">AJOUTER</button>
           </form>
-          {categories.map((category) => (
-            <div key={category.id} className="mb-3 rounded-xl bg-white p-4">
-              <form action={updateMenuCategory.bind(null, category.id)} className="flex gap-2">
-                <input name="name" required defaultValue={category.name} className="min-w-0 flex-1 rounded-lg border border-[#ded8cc] p-2" />
-                <input name="display_order" type="number" defaultValue={category.display_order} className="w-20 rounded-lg border border-[#ded8cc] p-2" />
-                <button className="text-sm font-bold text-[#a92e27]">ENREGISTRER</button>
-              </form>
-              <form action={deleteMenuCategory.bind(null, category.id)} className="mt-2">
-                <button className="text-xs text-[#4a4741]">Supprimer la catégorie et ses plats</button>
-              </form>
-            </div>
-          ))}
+          <CategoryManager
+            key={categories.map((category) => `${category.id}:${category.display_order}`).join("|")}
+            categories={categories}
+          />
         </div>
 
         <div>
