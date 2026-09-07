@@ -128,6 +128,7 @@ export default function CategoryManager({ categories: initialCategories }: Categ
   );
   const [categories, setCategories] = useState(initialCategories);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<AdminCategory | null>(null);
   const [isSavingOrder, startSavingOrder] = useTransition();
 
   function handleDragEnd({ active, over }: DragEndEvent) {
@@ -153,17 +154,16 @@ export default function CategoryManager({ categories: initialCategories }: Categ
     });
   }
 
-  async function handleDelete(category: AdminCategory) {
-    const confirmed = window.confirm(
-      `Supprimer « ${category.name} » et tous ses plats ? Cette action est irréversible.`,
-    );
-    if (!confirmed) return;
+  async function confirmDelete() {
+    if (!pendingDelete) return;
 
+    const category = pendingDelete;
     setDeletingId(category.id);
     try {
       await deleteMenuCategory(category.id);
       setCategories((current) => current.filter((item) => item.id !== category.id));
       toast.success(`« ${category.name} » et ses plats ont été supprimés.`);
+      setPendingDelete(null);
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Impossible de supprimer la catégorie.");
@@ -188,7 +188,7 @@ export default function CategoryManager({ categories: initialCategories }: Categ
             category={category}
             deleting={deletingId === category.id}
             disabled={isSavingOrder || deletingId !== null}
-            onDelete={handleDelete}
+            onDelete={setPendingDelete}
           />
         ))}
       </SortableContext>
@@ -197,6 +197,52 @@ export default function CategoryManager({ categories: initialCategories }: Categ
           <Loader2 size={14} className="animate-spin" aria-hidden="true" />
           Enregistrement de l&apos;ordre…
         </p>
+      )}
+      {pendingDelete && (
+        <div
+          className="fixed inset-0 z-[100] grid place-items-center bg-black/55 p-4 backdrop-blur-sm animate-[admin-dialog-backdrop_180ms_ease-out]"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !deletingId) setPendingDelete(null);
+          }}
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-category-title"
+            aria-describedby="delete-category-description"
+            className="w-full max-w-md rounded-2xl bg-[#f7f2e8] p-6 shadow-2xl animate-[admin-dialog-pop_220ms_cubic-bezier(.22,1,.36,1)]"
+          >
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-700">
+              <Trash2 size={23} aria-hidden="true" />
+            </div>
+            <h2 id="delete-category-title" className="serif text-3xl">
+              Supprimer cette catégorie ?
+            </h2>
+            <p id="delete-category-description" className="mt-3 text-sm text-[#4a4741]">
+              « {pendingDelete.name} » et tous ses plats seront supprimés. Cette action est irréversible.
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={Boolean(deletingId)}
+                onClick={() => setPendingDelete(null)}
+                className="rounded-full border border-[#ded8cc] px-5 py-3 text-sm font-bold transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                ANNULER
+              </button>
+              <button
+                type="button"
+                disabled={Boolean(deletingId)}
+                onClick={confirmDelete}
+                className="inline-flex items-center gap-2 rounded-full bg-red-700 px-5 py-3 text-sm font-bold !text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {deletingId ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : null}
+                {deletingId ? "SUPPRESSION…" : "SUPPRIMER"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </DndContext>
   );
