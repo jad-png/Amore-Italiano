@@ -3,7 +3,7 @@ import Reveal from "@/components/Reveal";
 
 const heroVideoUrl =
   process.env.NEXT_PUBLIC_HERO_VIDEO_URL ||
-  "https://qfoxuoplporoknduwawr.supabase.co/storage/v1/object/public/public-assets/hero-bg.mp4";
+  "";
 
 export default function Hero() {
   return (
