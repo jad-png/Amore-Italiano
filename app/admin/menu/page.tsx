@@ -61,16 +61,19 @@ export default async function AdminMenuPage() {
             <input name="name" required placeholder="Nom du plat" className="rounded-lg border border-[#ded8cc] p-3" />
             <div className="grid gap-3 md:col-span-2 md:grid-cols-3">
               {[
-                ["price_small", "Prix S"],
-                ["price_medium", "Prix M"],
-                ["price_large", "Prix L"],
-              ].map(([name, label]) => (
-                <label key={name} className="grid gap-1 text-xs font-bold text-[#4a4741]">
+                ["price_small", "Prix unique / S", true],
+                ["price_medium", "Prix M", false],
+                ["price_large", "Prix L", false],
+              ].map(([name, label, required]) => (
+                <label key={name as string} className="grid gap-1 text-xs font-bold text-[#4a4741]">
                   {label} (DH)
-                  <input name={name} required type="number" min="0" step="0.01" placeholder="0" className="rounded-lg border border-[#ded8cc] p-3 text-sm font-normal" />
+                  <input name={name as string} required={required as boolean} type="number" min="0" step="0.01" placeholder={required ? "25" : "Optionnel"} className="rounded-lg border border-[#ded8cc] p-3 text-sm font-normal" />
                 </label>
               ))}
             </div>
+            <p className="text-xs text-[#4a4741] md:col-span-2">
+              Pour un jus ou une boisson, renseignez uniquement le prix unique / S. Pour une pizza, renseignez S, M et L.
+            </p>
             <MenuImageField />
             <textarea name="description" placeholder="Description" className="rounded-lg border border-[#ded8cc] p-3 md:col-span-2" />
             <label className="flex items-center gap-2 text-sm md:col-span-2"><input name="is_available" type="checkbox" defaultChecked /> Disponible</label>
@@ -101,16 +104,19 @@ export default async function AdminMenuPage() {
                   <input name="name" required defaultValue={item.name} className="rounded-lg border border-[#ded8cc] p-2" />
                   <div className="grid gap-3 md:col-span-2 md:grid-cols-3">
                     {[
-                      ["price_small", "Prix S", item.price_small],
-                      ["price_medium", "Prix M", item.price_medium],
-                      ["price_large", "Prix L", item.price_large],
-                    ].map(([name, label, value]) => (
+                      ["price_small", "Prix unique / S", item.price_small, true],
+                      ["price_medium", "Prix M", item.price_medium, false],
+                      ["price_large", "Prix L", item.price_large, false],
+                    ].map(([name, label, value, required]) => (
                       <label key={name as string} className="grid gap-1 text-xs font-bold text-[#4a4741]">
                         {label as string} (DH)
-                        <input name={name as string} required type="number" min="0" step="0.01" defaultValue={value as number} className="rounded-lg border border-[#ded8cc] p-2 text-sm font-normal" />
+                        <input name={name as string} required={required as boolean} type="number" min="0" step="0.01" defaultValue={value as number | null | undefined} placeholder={required ? "25" : "Optionnel"} className="rounded-lg border border-[#ded8cc] p-2 text-sm font-normal" />
                       </label>
                     ))}
                   </div>
+                  <p className="text-xs text-[#4a4741] md:col-span-2">
+                    Laissez M et L vides pour un prix unique.
+                  </p>
                   <MenuImageField defaultValue={item.image_url ?? ""} />
                   <textarea name="description" defaultValue={item.description} className="rounded-lg border border-[#ded8cc] p-2 md:col-span-2" />
                   <label className="flex items-center gap-2 text-sm md:col-span-2"><input name="is_available" type="checkbox" defaultChecked={item.is_available} /> Disponible</label>
