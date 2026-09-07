@@ -101,9 +101,9 @@ export function SafiSection() {
           </p>
           <Link
             className="mt-6 inline-block rounded-full bg-[#a92e27] px-6 py-3 text-sm font-bold !text-white"
-            href="#adresse"
+            href="/safi"
           >
-            DÉCOUVRIR L&apos;ADRESSE
+            DÉCOUVRIR L&apos;HISTOIRE DE SAFI
           </Link>
         </Reveal>
       </div>
