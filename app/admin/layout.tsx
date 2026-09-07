@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { SignOutButton, UserButton } from "@clerk/nextjs";
+import { Toaster } from "sonner";
 import { assertAdmin } from "@/lib/auth";
 
 export default async function AdminLayout({
@@ -40,6 +41,7 @@ export default async function AdminLayout({
         <Link href="/admin/settings">Paramètres</Link>
       </nav>
       {children}
+      <Toaster position="top-right" richColors closeButton />
     </div>
   );
 }
