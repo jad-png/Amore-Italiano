@@ -26,7 +26,7 @@ export default async function AdminMenuPage() {
     supabase
       .from("menu_items")
       .select(
-        "id, category_id, name, description, price, is_available, image_url, display_order",
+        "id, category_id, name, description, price_small, price_medium, price_large, is_available, image_url, display_order",
       )
       .order("display_order")
       .order("created_at"),
@@ -59,7 +59,18 @@ export default async function AdminMenuPage() {
               {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
             </select>
             <input name="name" required placeholder="Nom du plat" className="rounded-lg border border-[#ded8cc] p-3" />
-            <input name="price" required type="number" step="0.01" placeholder="Prix" className="rounded-lg border border-[#ded8cc] p-3" />
+            <div className="grid gap-3 md:col-span-2 md:grid-cols-3">
+              {[
+                ["price_small", "Prix S"],
+                ["price_medium", "Prix M"],
+                ["price_large", "Prix L"],
+              ].map(([name, label]) => (
+                <label key={name} className="grid gap-1 text-xs font-bold text-[#4a4741]">
+                  {label} (DH)
+                  <input name={name} required type="number" min="0" step="0.01" placeholder="0" className="rounded-lg border border-[#ded8cc] p-3 text-sm font-normal" />
+                </label>
+              ))}
+            </div>
             <MenuImageField />
             <textarea name="description" placeholder="Description" className="rounded-lg border border-[#ded8cc] p-3 md:col-span-2" />
             <label className="flex items-center gap-2 text-sm md:col-span-2"><input name="is_available" type="checkbox" defaultChecked /> Disponible</label>
@@ -88,7 +99,18 @@ export default async function AdminMenuPage() {
                     {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
                   </select>
                   <input name="name" required defaultValue={item.name} className="rounded-lg border border-[#ded8cc] p-2" />
-                  <input name="price" required type="number" step="0.01" defaultValue={item.price} className="rounded-lg border border-[#ded8cc] p-2" />
+                  <div className="grid gap-3 md:col-span-2 md:grid-cols-3">
+                    {[
+                      ["price_small", "Prix S", item.price_small],
+                      ["price_medium", "Prix M", item.price_medium],
+                      ["price_large", "Prix L", item.price_large],
+                    ].map(([name, label, value]) => (
+                      <label key={name as string} className="grid gap-1 text-xs font-bold text-[#4a4741]">
+                        {label as string} (DH)
+                        <input name={name as string} required type="number" min="0" step="0.01" defaultValue={value as number} className="rounded-lg border border-[#ded8cc] p-2 text-sm font-normal" />
+                      </label>
+                    ))}
+                  </div>
                   <MenuImageField defaultValue={item.image_url ?? ""} />
                   <textarea name="description" defaultValue={item.description} className="rounded-lg border border-[#ded8cc] p-2 md:col-span-2" />
                   <label className="flex items-center gap-2 text-sm md:col-span-2"><input name="is_available" type="checkbox" defaultChecked={item.is_available} /> Disponible</label>
