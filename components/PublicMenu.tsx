@@ -10,10 +10,29 @@ type Item = {
   category_id: string;
   name: string;
   description: string;
-  price: number;
+  price_small: number | null;
+  price_medium: number | null;
+  price_large: number | null;
+  price?: number | null;
   is_available: boolean;
   image_url: string | null;
 };
+
+function formatPrice(value: number) {
+  return Number.isInteger(value)
+    ? String(value)
+    : value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+}
+
+function formatItemPrice(item: Item) {
+  const prices = [item.price_small, item.price_medium, item.price_large];
+  if (prices.every((price) => price !== null && price !== undefined)) {
+    return `${prices.map((price) => formatPrice(Number(price))).join(" / ")} DH`;
+  }
+  return item.price === null || item.price === undefined
+    ? "Prix sur demande"
+    : `${formatPrice(Number(item.price))} DH`;
+}
 
 function getLocalImagePath(value: string | null) {
   const path = value?.trim();
@@ -58,7 +77,7 @@ export default function PublicMenu({ categories, items }: { categories: Category
                 <h3 className="serif text-[21px]">{item.name}</h3>
                 <p className="text-[13px] text-[#4a4741]">{item.description}</p>
               </div>
-              <strong className="whitespace-nowrap text-[#a92e27]">{item.price} DH</strong>
+              <strong className="whitespace-nowrap text-[#a92e27]">{formatItemPrice(item)}</strong>
             </div>
           </article>
         ))}
