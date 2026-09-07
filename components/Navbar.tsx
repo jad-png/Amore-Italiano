@@ -5,21 +5,20 @@ import { useEffect, useState } from "react";
 const links = [
   ["Histoire", "#histoire"],
   ["Menu", "#menu"],
-  ["Safi", "#safi"],
+  ["Safi", "/safi"],
   ["Adresse", "#adresse"],
   ["Contact", "#contact"],
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(
-    () => typeof document !== "undefined" && !document.getElementById("hero"),
-  );
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const hero = document.getElementById("hero");
     if (!hero) {
-      return;
+      const frame = window.requestAnimationFrame(() => setScrolled(true));
+      return () => window.cancelAnimationFrame(frame);
     }
 
     const observer = new IntersectionObserver(
