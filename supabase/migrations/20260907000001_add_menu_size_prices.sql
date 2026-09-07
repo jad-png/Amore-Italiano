@@ -13,6 +13,6 @@ where price_small is null
    or price_large is null;
 
 alter table public.menu_items
-  alter column price_small set not null,
-  alter column price_medium set not null,
-  alter column price_large set not null;
+  alter column price_small drop not null,
+  alter column price_medium drop not null,
+  alter column price_large drop not null;
