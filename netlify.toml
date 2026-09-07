@@ -1,0 +1,3 @@
+[build.environment]
+  # These values are intentionally public and are emitted into the homepage.
+  SECRETS_SCAN_OMIT_KEYS = "SUPABASE_URL,NEXT_PUBLIC_HERO_VIDEO_URL"
