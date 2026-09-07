@@ -29,6 +29,9 @@ function formatItemPrice(item: Item) {
   if (prices.every((price) => price !== null && price !== undefined)) {
     return `${prices.map((price) => formatPrice(Number(price))).join(" / ")} DH`;
   }
+  if (item.price_small !== null && item.price_small !== undefined && item.price_medium == null && item.price_large == null) {
+    return `${formatPrice(Number(item.price_small))} DH`;
+  }
   return item.price === null || item.price === undefined
     ? "Prix sur demande"
     : `${formatPrice(Number(item.price))} DH`;
