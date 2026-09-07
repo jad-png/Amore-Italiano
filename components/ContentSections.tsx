@@ -49,7 +49,7 @@ export function Story() {
 }
 export function Location() {
   return (
-    <section className="bg-[#e9e2d5] py-25">
+    <section id="adresse" className="bg-[#e9e2d5] py-25">
       <div className="mx-auto w-[92%] max-w-[1180px]">
         <SectionHeader
           title={
