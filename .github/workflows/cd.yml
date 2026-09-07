@@ -33,6 +33,7 @@ jobs:
       POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      NEXT_PUBLIC_HERO_VIDEO_URL: ${{ secrets.NEXT_PUBLIC_HERO_VIDEO_URL }}
 
     steps:
       - name: Checkout repository

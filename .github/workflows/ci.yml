@@ -54,4 +54,5 @@ jobs:
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
           NEXT_PUBLIC_POSTHOG_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_POSTHOG_PROJECT_ID }}
           POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+          NEXT_PUBLIC_HERO_VIDEO_URL: ${{ secrets.NEXT_PUBLIC_HERO_VIDEO_URL }}
         run: npm run build
