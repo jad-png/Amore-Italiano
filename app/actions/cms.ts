@@ -81,9 +81,17 @@ export async function createMenuCategory(formData: FormData): Promise<void> {
   const name = text(formData, "name");
   if (!name) throw new Error("Le nom de la catégorie est obligatoire.");
 
+  const { data: lastCategory, error: lastCategoryError } = await supabase
+    .from("menu_categories")
+    .select("display_order")
+    .order("display_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (lastCategoryError) throw new Error(lastCategoryError.message);
+
   const { error } = await supabase.from("menu_categories").insert({
     name,
-    display_order: number(formData, "display_order"),
+    display_order: (lastCategory?.display_order ?? -1) + 1,
   });
   if (error) throw new Error(error.message);
   revalidatePath("/menu");
@@ -95,10 +103,12 @@ export async function updateMenuCategory(id: string, formData: FormData): Promis
   const name = text(formData, "name");
   if (!name) throw new Error("Le nom de la catégorie est obligatoire.");
 
-  const { error } = await supabase
-    .from("menu_categories")
-    .update({ name, display_order: number(formData, "display_order") })
-    .eq("id", id);
+  const update: { name: string; display_order?: number } = { name };
+  if (formData.has("display_order")) {
+    update.display_order = number(formData, "display_order");
+  }
+
+  const { error } = await supabase.from("menu_categories").update(update).eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/menu");
   revalidatePath("/admin/menu");
@@ -114,6 +124,32 @@ export async function deleteMenuCategory(id: string, _formData?: FormData): Prom
 
   const { error } = await supabase.from("menu_categories").delete().eq("id", id);
   if (error) throw new Error(error.message);
+  revalidatePath("/menu");
+  revalidatePath("/admin/menu");
+}
+
+export async function reorderMenuCategories(categoryIds: string[]): Promise<void> {
+  await assertAdmin();
+
+  const ids = Array.from(new Set(categoryIds.map(String).filter(Boolean)));
+  const { data: existingCategories, error: existingError } = await supabase
+    .from("menu_categories")
+    .select("id");
+  if (existingError) throw new Error(existingError.message);
+
+  const existingIds = new Set((existingCategories ?? []).map((category) => category.id));
+  if (ids.length !== existingIds.size || ids.some((id) => !existingIds.has(id))) {
+    throw new Error("La liste des catégories a changé. Actualisez la page puis réessayez.");
+  }
+
+  const updates = await Promise.all(
+    ids.map((id, display_order) =>
+      supabase.from("menu_categories").update({ display_order }).eq("id", id),
+    ),
+  );
+  const failedUpdate = updates.find((result) => result.error);
+  if (failedUpdate?.error) throw new Error(failedUpdate.error.message);
+
   revalidatePath("/menu");
   revalidatePath("/admin/menu");
 }
