@@ -29,3 +29,9 @@ coverage/
 .DS_Store
 .vscode/
 *.swp
+
+# Large video assets are served from Supabase Storage.
+*.mp4
+*.mov
+*.webm
+/public/videos/
