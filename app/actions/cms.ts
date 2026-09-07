@@ -14,6 +14,12 @@ function number(formData: FormData, key: string, fallback = 0) {
   return Number.isFinite(value) ? value : fallback;
 }
 
+function menuPrice(formData: FormData, key: string) {
+  const value = number(formData, key, -1);
+  if (value < 0) throw new Error("Les trois prix du plat sont obligatoires.");
+  return value;
+}
+
 const MAX_MENU_IMAGE_SIZE = 8 * 1024 * 1024;
 
 function hasValidImageSignature(buffer: Buffer, type: string) {
@@ -160,11 +166,18 @@ export async function createMenuItem(formData: FormData): Promise<void> {
   const categoryId = text(formData, "category_id");
   if (!name || !categoryId) throw new Error("Le nom et la catégorie sont obligatoires.");
 
+  const priceSmall = menuPrice(formData, "price_small");
+  const priceMedium = menuPrice(formData, "price_medium");
+  const priceLarge = menuPrice(formData, "price_large");
+
   const { error } = await supabase.from("menu_items").insert({
     category_id: categoryId,
     name,
     description: text(formData, "description"),
-    price: number(formData, "price"),
+    price: priceMedium,
+    price_small: priceSmall,
+    price_medium: priceMedium,
+    price_large: priceLarge,
     is_available: formData.get("is_available") === "on",
     image_url: text(formData, "image_url") || null,
   });
@@ -179,13 +192,30 @@ export async function updateMenuItem(id: string, formData: FormData): Promise<vo
   const categoryId = text(formData, "category_id");
   if (!name || !categoryId) throw new Error("Le nom et la catégorie sont obligatoires.");
 
+  const priceSmall = menuPrice(formData, "price_small");
+  const priceMedium = menuPrice(formData, "price_medium");
+  const priceLarge = menuPrice(formData, "price_large");
+
   const update = {
     category_id: categoryId,
     name,
     description: text(formData, "description"),
-    price: number(formData, "price"),
+    price: priceMedium,
+    price_small: priceSmall,
+    price_medium: priceMedium,
+    price_large: priceLarge,
     image_url: text(formData, "image_url") || null,
-  } as { category_id: string; name: string; description: string; price: number; image_url: string | null; is_available?: boolean };
+  } as {
+    category_id: string;
+    name: string;
+    description: string;
+    price: number;
+    price_small: number;
+    price_medium: number;
+    price_large: number;
+    image_url: string | null;
+    is_available?: boolean;
+  };
   if (formData.has("is_available")) update.is_available = formData.get("is_available") === "on";
   const { error } = await supabase.from("menu_items").update(update).eq("id", id);
   if (error) throw new Error(error.message);
