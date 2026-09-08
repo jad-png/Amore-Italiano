@@ -68,7 +68,7 @@ export default function PublicMenu({ categories, items }: { categories: Category
           <article key={item.id} className="flex justify-between gap-5 border-b border-[#ded8cc] py-5">
             <div>
               <h3 className="serif text-[21px]">{item.name}</h3>
-              <p className="text-[13px] text-[#6e6a61]">{item.description}</p>
+              <p className="mt-1 block text-[13px] text-[#6e6a61]">{item.description}</p>
             </div>
             <strong className="price whitespace-nowrap font-bold text-[#a92e27]">{formatItemPrice(item)}</strong>
           </article>
