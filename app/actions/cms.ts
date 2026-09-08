@@ -57,7 +57,7 @@ async function ensureMenuImagesBucket() {
   return null;
 }
 
-export async function uploadMenuImage(formData: FormData) {
+async function uploadImage(formData: FormData, folder: string) {
   await assertAdmin();
   const file = formData.get("image");
   if (!(file instanceof File) || file.size === 0) {
@@ -84,7 +84,7 @@ export async function uploadMenuImage(formData: FormData) {
   }
 
   const extension = file.type.split("/")[1].replace("jpeg", "jpg");
-  const path = `menu/${new Date().toISOString().slice(0, 10)}/${randomUUID()}.${extension}`;
+  const path = `${folder}/${new Date().toISOString().slice(0, 10)}/${randomUUID()}.${extension}`;
   const { error: uploadError } = await supabase.storage
     .from("menu-images")
     .upload(path, buffer, { contentType: file.type, upsert: false });
@@ -96,6 +96,30 @@ export async function uploadMenuImage(formData: FormData) {
 
   const { data } = supabase.storage.from("menu-images").getPublicUrl(path);
   return { success: true, url: data.publicUrl };
+}
+
+export async function uploadMenuImage(formData: FormData) {
+  return uploadImage(formData, "menu");
+}
+
+export async function uploadSafiImage(formData: FormData) {
+  return uploadImage(formData, "safi");
+}
+
+function safiStoragePath(url: string) {
+  const marker = "/storage/v1/object/public/menu-images/";
+  if (!url.startsWith(marker)) return null;
+  const path = decodeURIComponent(url.slice(marker.length));
+  return path.startsWith("safi/") ? path : null;
+}
+
+export async function deleteSafiImage(url: string) {
+  await assertAdmin();
+  const path = safiStoragePath(url);
+  if (!path) throw new Error("Cette image Safi est invalide.");
+
+  const { error } = await supabase.storage.from("menu-images").remove([path]);
+  if (error) throw new Error("Impossible de supprimer cette image.");
 }
 
 export async function createMenuCategory(formData: FormData): Promise<void> {
@@ -287,5 +311,40 @@ export async function updateRestaurantSetting(key: string, formData: FormData): 
   revalidatePath("/");
   revalidatePath("/adresse");
   revalidatePath("/contact");
+  revalidatePath("/admin/settings");
+}
+
+export async function updateSafiSettings(formData: FormData): Promise<void> {
+  await assertAdmin();
+  const imageValue = text(formData, "safi_images");
+  let images: string[] = [];
+
+  try {
+    const parsed = JSON.parse(imageValue || "[]");
+    if (!Array.isArray(parsed) || parsed.some((image) => typeof image !== "string")) {
+      throw new Error("invalid images");
+    }
+    images = parsed.filter(Boolean).slice(0, 30);
+  } catch {
+    throw new Error("La galerie Safi contient des images invalides.");
+  }
+
+  const values = [
+    ["safi_title", text(formData, "safi_title")],
+    ["safi_description", text(formData, "safi_description")],
+    ["safi_button_text", text(formData, "safi_button_text")],
+    ["safi_button_link", text(formData, "safi_button_link")],
+    ["safi_images", images],
+  ].map(([key, value]) => ({
+    key,
+    value: { value },
+    updated_at: new Date().toISOString(),
+  }));
+
+  const { error } = await supabase.from("restaurant_settings").upsert(values);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/");
+  revalidatePath("/safi");
   revalidatePath("/admin/settings");
 }
