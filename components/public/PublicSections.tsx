@@ -1,7 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import SectionHeader from "@/components/SectionHeader";
+import SafiGallerySection from "@/components/public/SafiGallerySection";
+import { supabase } from "@/lib/supabase";
 
 export function Stats() {
   return (
@@ -68,46 +69,32 @@ export function Highlights() {
   );
 }
 
-export function SafiSection() {
+export async function SafiSection() {
+  const { data } = await supabase
+    .from("restaurant_settings")
+    .select("key, value")
+    .in("key", ["safi_title", "safi_description", "safi_button_text", "safi_button_link", "safi_images"]);
+  const settings = data ?? [];
+
+  function value(key: string, fallback = "") {
+    const setting = settings.find((item) => item.key === key);
+    if (!setting?.value || typeof setting.value !== "object" || !("value" in setting.value)) return fallback;
+    return typeof setting.value.value === "string" ? setting.value.value : fallback;
+  }
+
+  const imageSetting = settings.find((item) => item.key === "safi_images");
+  const images = imageSetting?.value && typeof imageSetting.value === "object" && "value" in imageSetting.value && Array.isArray(imageSetting.value.value)
+    ? imageSetting.value.value.filter((image: unknown): image is string => typeof image === "string")
+    : [];
+
   return (
-    <section id="safi" className="py-25">
-      <div className="mx-auto grid w-[92%] max-w-[1180px] items-center gap-12 md:grid-cols-2">
-        <Reveal>
-          <Image
-            src="/images/amore-32-jpg.webp"
-            alt="Architecture marocaine à Safi"
-            width={960}
-            height={640}
-            sizes="(max-width: 768px) 92vw, 50vw"
-            className="h-[400px] w-full rounded-xl object-cover md:h-[580px]"
-          />
-        </Reveal>
-        <Reveal>
-          <div className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-[#a92e27]">
-            Ciao, Safi.
-          </div>
-          <h2 className="serif text-6xl leading-none">
-            Une ville
-            <br />
-            authentique.
-          </h2>
-          <p className="serif my-6 text-2xl">
-            « Une adresse italienne au cœur d&apos;une ville authentique. »
-          </p>
-          <p className="text-[#4a4741]">
-            Safi possède une identité particulière, entre médina, remparts,
-            ateliers de potiers et océan Atlantique. C&apos;est ici qu&apos;Amore
-            Italiano a choisi de s&apos;installer en 2019, au cœur du centre-ville.
-          </p>
-          <Link
-            className="mt-6 inline-block rounded-full bg-[#a92e27] px-6 py-3 text-sm font-bold !text-white"
-            href="/safi"
-          >
-            DÉCOUVRIR L&apos;HISTOIRE DE SAFI
-          </Link>
-        </Reveal>
-      </div>
-    </section>
+    <SafiGallerySection
+      title={value("safi_title", "Une ville authentique.")}
+      description={value("safi_description", "Safi possède une identité particulière, entre médina, remparts, ateliers de potiers et océan Atlantique.")}
+      buttonText={value("safi_button_text", "DÉCOUVRIR L'HISTOIRE DE SAFI")}
+      buttonLink={value("safi_button_link", "/safi")}
+      images={images}
+    />
   );
 }
 
