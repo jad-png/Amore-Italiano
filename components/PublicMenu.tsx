@@ -49,7 +49,7 @@ export default function PublicMenu({ categories, items }: { categories: Category
       <div className="mb-[35px] flex flex-wrap gap-2.5">
         <button
           onClick={() => setCategory("all")}
-          className={`cursor-pointer rounded-full border bg-transparent px-[18px] py-2.5 text-sm transition-colors hover:border-[#a92e27] hover:bg-[#a92e27] hover:text-white ${category === "all" ? "border-[#a92e27] bg-[#a92e27] text-white" : "border-[#ded8cc]"}`}
+          className={`cursor-pointer rounded-full border bg-transparent px-[18px] py-2.5 text-sm transition-colors ${category === "all" ? "border-[#a92e27] bg-[#a92e27] text-white" : "border-[#ded8cc] hover:border-[#a92e27] hover:bg-[#a92e27] hover:text-white"}`}
         >
           Tutto
         </button>
@@ -57,7 +57,7 @@ export default function PublicMenu({ categories, items }: { categories: Category
           <button
             key={item.id}
             onClick={() => setCategory(item.id)}
-            className={`cursor-pointer rounded-full border bg-transparent px-[18px] py-2.5 text-sm transition-colors hover:border-[#a92e27] hover:bg-[#a92e27] hover:text-white ${category === item.id ? "border-[#a92e27] bg-[#a92e27] text-white" : "border-[#ded8cc]"}`}
+            className={`cursor-pointer rounded-full border bg-transparent px-[18px] py-2.5 text-sm transition-colors ${category === item.id ? "border-[#a92e27] bg-[#a92e27] text-white" : "border-[#ded8cc] hover:border-[#a92e27] hover:bg-[#a92e27] hover:text-white"}`}
           >
             {item.name}
           </button>
