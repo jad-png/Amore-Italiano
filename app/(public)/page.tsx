@@ -29,9 +29,9 @@ export default async function Home() {
       <Stats />
       <Highlights />
       <Story />
-      <section id="menu" className="scroll-mt-24 py-25">
+      <section id="menu" className="scroll-mt-24 bg-[#a92e27] py-25 text-[#f7f2e8]">
         <div className="mx-auto w-[92%] max-w-[1180px]">
-          <SectionHeader title="La carta.">
+          <SectionHeader inverse title="La carta.">
             L&apos;Italie dans votre assiette. Découvrez nos pizzas, cafés, jus et
             spécialités.
           </SectionHeader>
