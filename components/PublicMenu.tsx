@@ -62,9 +62,12 @@ export default function PublicMenu({ categories, items }: { categories: Category
           <button key={item.id} onClick={() => setCategory(item.id)} className={`rounded-full border px-4 py-2 text-sm ${category === item.id ? "border-[#a92e27] bg-[#a92e27] !text-white" : "border-[#ded8cc]"}`}>{item.name}</button>
         ))}
       </div>
-      <div className="grid gap-x-7 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-2">
         {visibleItems.map((item) => (
-          <article key={item.id} className="border-b border-[#ded8cc] py-5">
+          <article
+            key={item.id}
+            className="relative flex min-h-[90px] justify-between overflow-hidden rounded-xl border-b border-neutral-200/60 bg-[#F7F4EE] p-4"
+          >
             {getLocalImagePath(item.image_url) && (
               <Image
                 src={getLocalImagePath(item.image_url) as string}
@@ -72,13 +75,16 @@ export default function PublicMenu({ categories, items }: { categories: Category
                 width={640}
                 height={420}
                 sizes="(max-width: 768px) 92vw, 45vw"
-                className="mb-4 h-52 w-full rounded-xl object-cover"
+                className="absolute bottom-0 right-0 top-0 z-0 h-full w-36 object-cover md:w-48"
               />
             )}
-            <div className="flex justify-between gap-5">
-              <div>
-                <h3 className="serif text-[21px]">{item.name}</h3>
-                <p className="text-[13px] text-[#4a4741]">{item.description}</p>
+            {getLocalImagePath(item.image_url) && (
+              <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-[#F7F4EE] via-[#F7F4EE]/85 to-transparent" />
+            )}
+            <div className="relative z-20 flex min-w-0 flex-1 justify-between gap-5">
+              <div className="min-w-0">
+                <h3 className="serif text-[21px] font-bold">{item.name}</h3>
+                <p className="max-w-[24rem] text-[13px] text-[#6e6a61]">{item.description}</p>
               </div>
               <strong className="whitespace-nowrap text-[#a92e27]">{formatItemPrice(item)}</strong>
             </div>
