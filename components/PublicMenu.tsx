@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePostHog } from "posthog-js/react";
+import Image from "next/image";
 
 type Category = { id: string; name: string };
 type Item = {
@@ -14,6 +15,7 @@ type Item = {
   price_large: number | null;
   price?: number | null;
   is_available: boolean;
+  image_url: string | null;
 };
 
 function formatPrice(value: number) {
@@ -33,6 +35,14 @@ function formatItemPrice(item: Item) {
   return item.price === null || item.price === undefined
     ? "Prix sur demande"
     : `${formatPrice(Number(item.price))} DH`;
+}
+
+function getLocalImagePath(value: string | null) {
+  const path = value?.trim();
+  if (!path) return null;
+  if (path.startsWith("/images/")) return path;
+  if (path.startsWith("public/images/")) return `/${path.slice("public/".length)}`;
+  return `/images/${path.replace(/^\/+/, "")}`;
 }
 
 export default function PublicMenu({ categories, items }: { categories: Category[]; items: Item[] }) {
@@ -65,12 +75,25 @@ export default function PublicMenu({ categories, items }: { categories: Category
       </div>
       <div className="grid grid-cols-1 gap-[14px] md:grid-cols-2">
         {visibleItems.map((item) => (
-          <article key={item.id} className="flex justify-between gap-5 border-b border-[#ded8cc] py-5">
-            <div>
+          <article key={item.id} className="relative flex justify-between gap-5 overflow-hidden border-b border-[#ded8cc] py-5">
+            {getLocalImagePath(item.image_url) && (
+              <Image
+                src={getLocalImagePath(item.image_url) as string}
+                alt=""
+                width={640}
+                height={420}
+                sizes="(max-width: 768px) 33vw, 40vw"
+                className="pointer-events-none absolute bottom-0 right-0 top-0 z-0 h-full w-1/3 object-cover md:w-2/5"
+              />
+            )}
+            {getLocalImagePath(item.image_url) && (
+              <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-[#f7f2e8] via-[#f7f2e8]/80 to-transparent" />
+            )}
+            <div className="relative z-20">
               <h3 className="serif text-[21px]">{item.name}</h3>
               <p className="text-[13px] text-[#6e6a61]">{item.description}</p>
             </div>
-            <strong className="price whitespace-nowrap font-bold text-[#a92e27]">{formatItemPrice(item)}</strong>
+            <strong className="relative z-20 whitespace-nowrap font-bold text-[#a92e27]">{formatItemPrice(item)}</strong>
           </article>
         ))}
       </div>
