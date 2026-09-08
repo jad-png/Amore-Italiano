@@ -21,9 +21,9 @@ export default async function Page() {
   const items = itemsData ?? [];
 
   return (
-    <section className="min-h-screen py-40">
+    <section className="min-h-screen bg-[#a92e27] py-40 text-[#f7f2e8]">
       <div className="mx-auto w-[92%] max-w-[1180px]">
-        <SectionHeader title="La carta.">
+        <SectionHeader inverse title="La carta.">
           L&apos;Italie dans votre assiette. Découvrez nos pizzas, cafés, jus et
           spécialités.
         </SectionHeader>
