@@ -11,6 +11,7 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
   const [content, setContent] = useState(initialContent);
   const [uploading, setUploading] = useState(false);
   const [removedUrls, setRemovedUrls] = useState<string[]>([]);
+  const [pendingUploads, setPendingUploads] = useState<string[]>([]);
   const [saving, startSaving] = useTransition();
 
   function updateSection<K extends keyof SafiContent>(section: K, key: keyof SafiContent[K], value: string) {
@@ -31,6 +32,7 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
     setUploading(true);
     try {
       const url = await uploadImage(file);
+      setPendingUploads((current) => [...current, url]);
       if (content.hero.image && content.hero.image !== url) {
         setRemovedUrls((current) => [...new Set([...current, content.hero.image])]);
       }
@@ -50,6 +52,7 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
     setUploading(true);
     try {
       const uploaded = await Promise.all(files.map(uploadImage));
+      setPendingUploads((current) => [...current, ...uploaded]);
       setContent((current) => ({
         ...current,
         gallery: {
@@ -125,12 +128,15 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
         await updateSafiPageContent(formData);
         const cleanup = await Promise.allSettled(removedUrls.map((url) => deleteSafiImage(url)));
         setRemovedUrls([]);
+        setPendingUploads([]);
         if (cleanup.some((result) => result.status === "rejected")) {
           toast.warning("La page est enregistrée, mais certaines anciennes images n'ont pas pu être supprimées du stockage.");
         } else {
           toast.success("La page Safi a été enregistrée.");
         }
       } catch (error) {
+        await Promise.allSettled(pendingUploads.map((url) => deleteSafiImage(url)));
+        setPendingUploads([]);
         toast.error(error instanceof Error ? error.message : "Impossible d'enregistrer la page Safi.");
       }
     });
