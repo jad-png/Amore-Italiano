@@ -118,6 +118,14 @@ export async function deleteSafiImage(url: string) {
   const path = safiStoragePath(url);
   if (!path) return;
 
+  const [{ data: settings }, { data: menuItems }] = await Promise.all([
+    supabase.from("restaurant_settings").select("value"),
+    supabase.from("menu_items").select("image_url"),
+  ]);
+  const isReferencedBySettings = (settings ?? []).some((setting) => JSON.stringify(setting.value ?? {}).includes(url));
+  const isReferencedByMenu = (menuItems ?? []).some((item) => item.image_url === url);
+  if (isReferencedBySettings || isReferencedByMenu) return;
+
   const { error } = await supabase.storage.from("menu-images").remove([path]);
   if (error) throw new Error("Impossible de supprimer cette image.");
 }
