@@ -38,6 +38,7 @@ export default async function AdminLayout({
         <Link href="/admin/dashboard">Dashboard</Link>
         <Link href="/admin/menu">Menu</Link>
         <Link href="/admin/applications">Candidatures</Link>
+        <Link href="/admin/safi">Safi</Link>
         <Link href="/admin/settings">Paramètres</Link>
       </nav>
       {children}

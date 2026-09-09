@@ -2,31 +2,10 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import type { SafiContent } from "@/lib/safi";
 
-const photos = [
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/d/d8/Port_of_Safi_city%2C_Morocco.jpg",
-    alt: "Le port de Safi et l'Atlantique",
-    caption: "Le port de Safi & l'Atlantique",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Safi_medina%28js%29.jpg",
-    alt: "Les remparts et la médina de Safi",
-    caption: "Les remparts et la médina",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/f/f7/Museo_Nacional_de_Cer%C3%A1mica%2C_Safi.jpg",
-    alt: "Le Kechla, musée national de la céramique",
-    caption: "Le Kechla — Musée national de la céramique",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Poterie_de_Safi_Maroc_Morocco_Marueccos.JPG",
-    alt: "La poterie traditionnelle de Safi",
-    caption: "La poterie de Safi",
-  },
-] as const;
-
-export default function SafiGallery() {
+export default function SafiGallery({ content }: { content: SafiContent["gallery"] }) {
+  const photos = content.images;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const selectedPhoto = selectedIndex === null ? null : photos[selectedIndex];
 
@@ -56,30 +35,25 @@ export default function SafiGallery() {
       <div className="mx-auto w-[92%] max-w-[1180px]">
         <div className="mb-14 max-w-[780px]">
           <div className="mb-5 text-xs font-bold uppercase tracking-[.18em] text-[#a92e27]">
-            Regards sur Safi
+            {content.eyebrow}
           </div>
-          <h2 className="serif text-[clamp(42px,6vw,72px)] leading-[.98]">
-            Une ville à
-            <br />
-            <em className="text-[#a92e27]">regarder.</em>
-          </h2>
+          <h2 className="serif text-[clamp(42px,6vw,72px)] leading-[.98]">{content.title}</h2>
           <p className="mt-5 max-w-[650px] leading-7 text-[#6e6a61]">
-            Quelques images pour découvrir le patrimoine, le port, la médina et
-            l&apos;art de la céramique qui font l&apos;identité de Safi.
+            {content.description}
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-[1.25fr_.75fr_.75fr] lg:grid-rows-[260px_260px]">
           {photos.map((photo, index) => (
             <button
-              key={photo.src}
+              key={photo.url}
               type="button"
               onClick={() => setSelectedIndex(index)}
               className={`group relative min-h-[260px] overflow-hidden rounded-sm bg-[#e8e1d4] text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a92e27] focus-visible:ring-offset-4 ${index === 0 ? "lg:row-span-2" : ""}`}
               aria-label={`Agrandir : ${photo.alt}`}
             >
               <Image
-                src={photo.src}
+                src={photo.url}
                 alt={photo.alt}
                 fill
                 sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 40vw"
@@ -93,12 +67,7 @@ export default function SafiGallery() {
           ))}
         </div>
 
-        <p className="mt-7 text-[11px] leading-5 text-[#6e6a61]">
-          Photos : Wikimedia Commons, utilisées selon les licences indiquées sur
-          leurs pages de fichier (notamment CC BY / CC BY-SA). Les crédits et
-          licences doivent être conservés si ces images sont publiées sur un site
-          en production.
-        </p>
+        <p className="mt-7 text-[11px] leading-5 text-[#6e6a61]">Les images de cette galerie sont gérées depuis le tableau de bord administrateur.</p>
       </div>
 
       {selectedPhoto && selectedIndex !== null && (
@@ -116,7 +85,7 @@ export default function SafiGallery() {
             className="relative h-[min(82vh,760px)] w-full max-w-5xl"
           >
             <Image
-              src={selectedPhoto.src}
+              src={selectedPhoto.url}
               alt={selectedPhoto.alt}
               fill
               sizes="100vw"
