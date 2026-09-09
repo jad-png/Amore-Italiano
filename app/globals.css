@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root { --cream:#f7f2e8; --red:#a92e27; --olive:#596246; --ink:#171717; --muted:#4a4741; --line:#ded8cc; }
 * { box-sizing:border-box; }
@@ -14,3 +15,9 @@ a { text-decoration:none; color:inherit; }
 @keyframes admin-dialog-backdrop { from { opacity:0; } to { opacity:1; } }
 @keyframes admin-dialog-pop { from { opacity:0; transform:translateY(10px) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
 @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+
+.amore-map-marker { background: transparent; border: 0; }
+.amore-map-marker__pulse { position:absolute; inset:5px; border-radius:9999px; background:rgba(169,46,39,.2); animation:amore-map-pulse 2s ease-out infinite; }
+.amore-map-marker__pin { position:absolute; left:8px; top:2px; display:grid; width:32px; height:38px; place-items:center; border:3px solid #f7f2e8; border-radius:50% 50% 50% 0; background:#a92e27; color:#fff; font-family:var(--font-playfair),Georgia,serif; font-size:18px; font-weight:700; box-shadow:0 7px 14px rgba(23,23,23,.25); transform:rotate(-45deg); }
+.amore-map-marker__pin span { display:block; transform:rotate(45deg); }
+@keyframes amore-map-pulse { 0% { opacity:.8; transform:scale(.65); } 70%,100% { opacity:0; transform:scale(1.45); } }
