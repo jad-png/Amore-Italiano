@@ -1,5 +1,4 @@
 import Reveal from "./Reveal";
-import SectionHeader from "./SectionHeader";
 import SafiLocationMap from "@/components/public/safi/SafiLocationMapLoader";
 export function Story() {
   return (
@@ -49,31 +48,28 @@ export function Story() {
 }
 export function Location() {
   return (
-    <section id="adresse" className="bg-[#e9e2d5] py-25">
-      <div className="mx-auto w-[92%] max-w-[1180px]">
-        <SectionHeader
-          title={
-            <>
-              Nous trouver
-              <br />à Safi.
-            </>
-          }
-        >
-          Venez nous rendre visite au Label Gallery, au cœur du centre-ville.
-        </SectionHeader>
-        <div className="relative overflow-hidden rounded-3xl border border-[#ded8cc] bg-[#f7f2e8] p-2 shadow-[0_24px_70px_rgba(65,52,37,.14)]">
-          <div className="relative min-h-[520px] overflow-hidden rounded-[1.25rem]">
-            <SafiLocationMap />
-            <div className="absolute bottom-4 left-4 z-[500] w-[calc(100%-2rem)] max-w-[350px] rounded-2xl border border-white/60 bg-[#f7f2e8]/90 p-6 shadow-[0_18px_40px_rgba(23,23,23,.16)] backdrop-blur-md md:bottom-6 md:left-6">
-              <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#a92e27]">Amore Italiano</p>
-              <h3 className="serif mt-2 text-3xl leading-tight text-[#171717]">Amore Italiano Safi</h3>
-              <address className="mt-3 not-italic text-sm leading-6 text-[#6e6a61]">
-                Label Gallery · Centre-ville
-                <br />
-                Safi, Maroc
-              </address>
-              <p className="mt-3 text-sm font-medium text-[#4a4741]">Tous les jours: 11h00 — 23h00</p>
-              <div className="mt-5 flex flex-wrap gap-2">
+    <section id="adresse" className="bg-[#e9e2d5]">
+      <div className="container mx-auto mb-6 px-4 pb-2 pt-24">
+        <div className="flex items-end justify-between gap-7 max-md:block">
+          <h2 className="serif text-[clamp(42px,6vw,70px)] leading-none">
+            Nous trouver
+            <br />à Safi.
+          </h2>
+          <p className="max-w-[420px] text-[#4a4741] max-md:mt-5">Venez nous rendre visite au Label Gallery, au cœur du centre-ville.</p>
+        </div>
+      </div>
+      <div className="relative h-[480px] w-full overflow-hidden">
+        <SafiLocationMap />
+        <div className="absolute bottom-6 left-6 z-[1000] w-[calc(100%-3rem)] max-w-[350px] rounded-2xl border border-white/60 bg-[#f7f2e8]/90 p-6 shadow-[0_18px_40px_rgba(23,23,23,.16)] backdrop-blur-md">
+          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#a92e27]">Amore Italiano</p>
+          <h3 className="serif mt-2 text-3xl leading-tight text-[#171717]">Amore Italiano Safi</h3>
+          <address className="mt-3 not-italic text-sm leading-6 text-[#6e6a61]">
+            Label Gallery · Centre-ville
+            <br />
+            Safi, Maroc
+          </address>
+          <p className="mt-3 text-sm font-medium text-[#4a4741]">Tous les jours: 11h00 — 23h00</p>
+          <div className="mt-5 flex flex-wrap gap-2">
                 <a
                   href="https://maps.google.com/?q=Amore+Italiano+Safi"
                   target="_blank"
@@ -88,8 +84,6 @@ export function Location() {
                 >
                   Appeler
                 </a>
-              </div>
-            </div>
           </div>
         </div>
       </div>
