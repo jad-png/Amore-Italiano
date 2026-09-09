@@ -106,6 +106,7 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
     formData.set("safi_hero_title", content.hero.title);
     formData.set("safi_hero_description", content.hero.description);
     formData.set("safi_hero_image", content.hero.image);
+    formData.set("safi_hero_image_alt", content.hero.alt);
     formData.set("safi_history_eyebrow", content.history.eyebrow);
     formData.set("safi_history_title", content.history.title);
     formData.set("safi_history_description", content.history.description);
@@ -171,6 +172,7 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
             <Field label="Surtitre" value={content.hero.eyebrow} onChange={(value) => updateSection("hero", "eyebrow", value)} />
             <Field label="Titre" value={content.hero.title} onChange={(value) => updateSection("hero", "title", value)} />
             <TextField className="sm:col-span-2" label="Description" value={content.hero.description} onChange={(value) => updateSection("hero", "description", value)} />
+            <Field className="sm:col-span-2" label="Texte alternatif de l'image" value={content.hero.alt} onChange={(value) => updateSection("hero", "alt", value)} />
           </div>
         </div>
       </section>
@@ -233,8 +235,8 @@ function SectionTitle({ eyebrow, title, description }: { eyebrow: string; title:
   return <div><p className="mb-2 text-xs font-bold uppercase tracking-[.18em] text-[#a92e27]">{eyebrow}</p><h2 className="serif text-3xl">{title}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#6e6a61]">{description}</p></div>;
 }
 
-function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
-  return <label className="block text-xs font-bold text-[#4a4741]">{label}<input value={value} onChange={(event) => onChange(event.target.value)} className="mt-1.5 w-full rounded-lg border border-[#ded8cc] bg-white p-2.5 text-sm font-normal outline-none focus:border-[#a92e27] focus:ring-4 focus:ring-[#a92e27]/10" /></label>;
+function Field({ label, value, onChange, className = "" }: { label: string; value: string; onChange: (value: string) => void; className?: string }) {
+  return <label className={`block text-xs font-bold text-[#4a4741] ${className}`}>{label}<input value={value} onChange={(event) => onChange(event.target.value)} className="mt-1.5 w-full rounded-lg border border-[#ded8cc] bg-white p-2.5 text-sm font-normal outline-none focus:border-[#a92e27] focus:ring-4 focus:ring-[#a92e27]/10" /></label>;
 }
 
 function TextField({ label, value, onChange, className = "" }: { label: string; value: string; onChange: (value: string) => void; className?: string }) {
