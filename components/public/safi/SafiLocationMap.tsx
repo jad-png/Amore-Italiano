@@ -1,10 +1,31 @@
 "use client";
 
 import L from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer, ZoomControl } from "react-leaflet";
-import { useMemo } from "react";
+import { MapContainer, Marker, Popup, TileLayer, ZoomControl, useMap } from "react-leaflet";
+import { useEffect, useMemo } from "react";
 
 const SAFI_COORDINATES: [number, number] = [32.2994, -9.2372];
+
+function MapSizeController() {
+  const map = useMap();
+
+  useEffect(() => {
+    const invalidate = () => map.invalidateSize({ pan: false });
+    const frame = window.requestAnimationFrame(invalidate);
+    const timeout = window.setTimeout(invalidate, 150);
+    const container = map.getContainer();
+    const observer = new ResizeObserver(invalidate);
+
+    observer.observe(container);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timeout);
+      observer.disconnect();
+    };
+  }, [map]);
+
+  return null;
+}
 
 export default function SafiLocationMap() {
   const markerIcon = useMemo(
@@ -29,6 +50,7 @@ export default function SafiLocationMap() {
       className="h-full min-h-[360px] w-full"
       aria-label="Carte indiquant Amore Italiano à Safi"
     >
+      <MapSizeController />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
