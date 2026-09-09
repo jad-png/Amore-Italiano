@@ -1,6 +1,6 @@
 import Reveal from "./Reveal";
 import SectionHeader from "./SectionHeader";
-import TrackedMapLink from "./TrackedMapLink";
+import SafiLocationMap from "@/components/public/safi/SafiLocationMapLoader";
 export function Story() {
   return (
     <section className="bg-[#596246] py-25 text-white">
@@ -54,57 +54,43 @@ export function Location() {
         <SectionHeader
           title={
             <>
-              Ci vediamo
-              <br />a Safi.
+              Nous trouver
+              <br />à Safi.
             </>
           }
         >
           Venez nous rendre visite au Label Gallery, au cœur du centre-ville.
         </SectionHeader>
-        <div className="grid gap-5 md:grid-cols-3">
-          {[
-            [
-              "📍 Adresse",
-              <>
-                {" "}
-                <b>Label Gallery</b>
+        <div className="relative overflow-hidden rounded-3xl border border-[#ded8cc] bg-[#f7f2e8] p-2 shadow-[0_24px_70px_rgba(65,52,37,.14)]">
+          <div className="relative min-h-[520px] overflow-hidden rounded-[1.25rem]">
+            <SafiLocationMap />
+            <div className="absolute bottom-4 left-4 z-[500] w-[calc(100%-2rem)] max-w-[350px] rounded-2xl border border-white/60 bg-[#f7f2e8]/90 p-6 shadow-[0_18px_40px_rgba(23,23,23,.16)] backdrop-blur-md md:bottom-6 md:left-6">
+              <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#a92e27]">Amore Italiano</p>
+              <h3 className="serif mt-2 text-3xl leading-tight text-[#171717]">Amore Italiano Safi</h3>
+              <address className="mt-3 not-italic text-sm leading-6 text-[#6e6a61]">
+                Label Gallery · Centre-ville
                 <br />
-                Centre-ville, Safi
-                <br />
-                Maroc
-                <br />
-                <br />
-                <TrackedMapLink href="https://www.google.com/maps/search/?api=1&query=Amore+Italiano+Safi">
-                  OUVRIR GOOGLE MAPS
-                </TrackedMapLink>
-              </>,
-            ],
-            [
-              "🕐 Horaires",
-              <>
-                <b>Tous les jours</b>
-                <br />
-                11h00 — 23h00
-                <br />
-                <i>En été : jusqu&apos;à minuit.</i>
-              </>,
-            ],
-            [
-              "📞 Téléphone",
-              <>
-                00212 524 62 88 97
-                <br />
-                00212 658 66 33 76
-                <br />
-                00212 762 81 85 08
-              </>,
-            ],
-          ].map(([h, c]) => (
-            <Reveal key={h as string} className="rounded-xl bg-[#f7f2e8] p-8">
-              <h3 className="serif mb-3 text-3xl">{h}</h3>
-              <p className="text-[#4a4741]">{c}</p>
-            </Reveal>
-          ))}
+                Safi, Maroc
+              </address>
+              <p className="mt-3 text-sm font-medium text-[#4a4741]">Tous les jours: 11h00 — 23h00</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <a
+                  href="https://maps.google.com/?q=Amore+Italiano+Safi"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center rounded-full bg-[#a92e27] px-4 py-2.5 text-xs font-bold uppercase tracking-[.08em] text-white transition hover:bg-[#86221e] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a92e27] focus-visible:ring-offset-2"
+                >
+                  Obtenir l&apos;itinéraire
+                </a>
+                <a
+                  href="tel:+212524628897"
+                  className="inline-flex items-center rounded-full border border-[#a92e27]/40 px-4 py-2.5 text-xs font-bold uppercase tracking-[.08em] text-[#a92e27] transition hover:bg-[#a92e27] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a92e27] focus-visible:ring-offset-2"
+                >
+                  Appeler
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
