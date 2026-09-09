@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import SafiGallery from "@/components/public/safi/SafiGallery";
-import { readSafiContent } from "@/lib/safi";
-import { supabase } from "@/lib/supabase";
+import { getSafiContent } from "@/lib/safi-server";
 
 function StorySection({
   eyebrow,
@@ -43,8 +42,7 @@ function StorySection({
 }
 
 export default async function SafiStory() {
-  const { data } = await supabase.from("restaurant_settings").select("key, value");
-  const content = readSafiContent((data ?? []) as { key: string; value: unknown }[]);
+  const content = await getSafiContent();
 
   return (
     <>
