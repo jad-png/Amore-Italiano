@@ -1,7 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { assertAdmin } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 
@@ -433,6 +433,7 @@ export async function updateSafiPageContent(formData: FormData): Promise<void> {
   if (error) throw new Error(error.message);
 
   revalidatePath("/safi");
+  revalidateTag("safi-page-content", "max");
   revalidatePath("/");
   revalidatePath("/admin/safi");
 }
