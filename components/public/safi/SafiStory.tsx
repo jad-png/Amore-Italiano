@@ -27,14 +27,14 @@ function StorySection({
         </div>
         <div>
           <div className="text-base leading-8 text-[#6e6a61]">{children}</div>
-          <div className="mt-6">
+          <ul className="mt-6">
             {facts.map(([label, description]) => (
-              <div key={label} className="flex gap-6 border-t border-[#ded8cc] py-5">
+              <li key={label} className="flex gap-6 border-t border-[#ded8cc] py-5">
                 <strong className="serif min-w-20 text-2xl">{label}</strong>
                 <span className="text-sm leading-6 text-[#6e6a61]">{description}</span>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
     </section>
@@ -66,7 +66,7 @@ export default async function SafiStory() {
           <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-[#e8e1d4] shadow-[0_20px_50px_rgba(0,0,0,.12)]">
             <Image
               src={content.hero.image}
-              alt={content.hero.title}
+              alt={content.hero.alt}
               fill
               priority
               sizes="(max-width: 768px) 92vw, 45vw"
