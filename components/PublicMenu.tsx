@@ -49,7 +49,7 @@ export default function PublicMenu({ categories, items }: { categories: Category
       <div className="mb-[35px] flex flex-wrap gap-2.5">
         <button
           onClick={() => setCategory("all")}
-          className={`cursor-pointer rounded-full border bg-transparent px-[18px] py-2.5 text-sm transition-colors ${category === "all" ? "!border-[#f7f2e8] !bg-[#f7f2e8] !text-[#a92e27]" : "border-[#f7f2e8]/70 text-[#f7f2e8] hover:border-[#f7f2e8] hover:bg-[#f7f2e8] hover:text-[#a92e27]"}`}
+          className={`cursor-pointer rounded-full border bg-transparent px-[18px] py-2.5 text-sm transition-colors ${category === "all" ? "!border-[#a92e27] !bg-[#a92e27] !text-white" : "border-[#ded8cc] hover:border-[#a92e27] hover:bg-[#a92e27] hover:text-white"}`}
         >
           Tutto
         </button>
@@ -57,7 +57,7 @@ export default function PublicMenu({ categories, items }: { categories: Category
           <button
             key={item.id}
             onClick={() => setCategory(item.id)}
-            className={`cursor-pointer rounded-full border bg-transparent px-[18px] py-2.5 text-sm transition-colors ${category === item.id ? "!border-[#f7f2e8] !bg-[#f7f2e8] !text-[#a92e27]" : "border-[#f7f2e8]/70 text-[#f7f2e8] hover:border-[#f7f2e8] hover:bg-[#f7f2e8] hover:text-[#a92e27]"}`}
+            className={`cursor-pointer rounded-full border bg-transparent px-[18px] py-2.5 text-sm transition-colors ${category === item.id ? "!border-[#a92e27] !bg-[#a92e27] !text-white" : "border-[#ded8cc] hover:border-[#a92e27] hover:bg-[#a92e27] hover:text-white"}`}
           >
             {item.name}
           </button>
@@ -65,16 +65,16 @@ export default function PublicMenu({ categories, items }: { categories: Category
       </div>
       <div className="grid grid-cols-1 gap-[14px] md:grid-cols-2">
         {visibleItems.map((item) => (
-          <article key={item.id} className="flex justify-between gap-5 border-b border-[#f7f2e8]/35 py-5">
+          <article key={item.id} className="flex justify-between gap-5 border-b border-[#ded8cc] py-5">
             <div>
               <h3 className="serif text-[21px]">{item.name}</h3>
-              <p className="mt-1 block text-[13px] text-[#f7f2e8]/80">{item.description}</p>
+              <p className="mt-1 block text-[13px] text-[#6e6a61]">{item.description}</p>
             </div>
-            <strong className="price whitespace-nowrap font-bold text-[#f7f2e8]">{formatItemPrice(item)}</strong>
+            <strong className="price whitespace-nowrap font-bold text-[#a92e27]">{formatItemPrice(item)}</strong>
           </article>
         ))}
       </div>
-      {!visibleItems.length && <p className="text-[#f7f2e8]/80">Aucun plat disponible dans cette catégorie.</p>}
+      {!visibleItems.length && <p className="text-[#4a4741]">Aucun plat disponible dans cette catégorie.</p>}
     </>
   );
 }
