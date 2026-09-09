@@ -413,6 +413,7 @@ export async function updateSafiPageContent(formData: FormData): Promise<void> {
     "safi_hero_title",
     "safi_hero_description",
     "safi_hero_image",
+    "safi_hero_image_alt",
     "safi_history_eyebrow",
     "safi_history_title",
     "safi_history_description",
