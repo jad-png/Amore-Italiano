@@ -348,3 +348,52 @@ export async function updateSafiSettings(formData: FormData): Promise<void> {
   revalidatePath("/safi");
   revalidatePath("/admin/settings");
 }
+
+function jsonSetting(formData: FormData, key: string) {
+  try {
+    return JSON.parse(text(formData, key) || "[]") as unknown;
+  } catch {
+    throw new Error(`Le champ ${key} contient des données invalides.`);
+  }
+}
+
+export async function updateSafiPageContent(formData: FormData): Promise<void> {
+  await assertAdmin();
+
+  const jsonFields = [
+    "safi_history_timeline",
+    "safi_patrimoine_facts",
+    "safi_savoir_facts",
+    "safi_gallery_images",
+  ];
+  const values = [
+    "safi_hero_eyebrow",
+    "safi_hero_title",
+    "safi_hero_description",
+    "safi_hero_image",
+    "safi_history_eyebrow",
+    "safi_history_title",
+    "safi_history_description",
+    "safi_patrimoine_eyebrow",
+    "safi_patrimoine_title",
+    "safi_patrimoine_description",
+    "safi_savoir_eyebrow",
+    "safi_savoir_title",
+    "safi_savoir_description",
+    "safi_gallery_eyebrow",
+    "safi_gallery_title",
+    "safi_gallery_description",
+  ].map((key) => ({ key, value: { value: text(formData, key) }, updated_at: new Date().toISOString() }));
+
+  const jsonValues = jsonFields.map((key) => ({
+    key,
+    value: { value: jsonSetting(formData, key) },
+    updated_at: new Date().toISOString(),
+  }));
+  const { error } = await supabase.from("restaurant_settings").upsert([...values, ...jsonValues]);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/safi");
+  revalidatePath("/");
+  revalidatePath("/admin/safi");
+}
