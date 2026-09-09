@@ -9,6 +9,14 @@ function text(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
 }
 
+function safiText(formData: FormData, key: string, maxLength: number) {
+  const value = text(formData, key);
+  if (value.length > maxLength) {
+    throw new Error(`Le champ ${key} est trop long.`);
+  }
+  return value;
+}
+
 function number(formData: FormData, key: string, fallback = 0) {
   const value = Number(formData.get(key));
   return Number.isFinite(value) ? value : fallback;
@@ -107,9 +115,22 @@ export async function uploadSafiImage(formData: FormData) {
 }
 
 function safiStoragePath(url: string) {
+  const configuredUrl = process.env.SUPABASE_URL;
+  if (!configuredUrl) return null;
+
+  let parsedUrl: URL;
+  let configuredOrigin: string;
+  try {
+    parsedUrl = new URL(url);
+    configuredOrigin = new URL(configuredUrl).origin;
+  } catch {
+    return null;
+  }
+  if (parsedUrl.origin !== configuredOrigin) return null;
+
   const marker = "/storage/v1/object/public/menu-images/";
-  if (!url.startsWith(marker)) return null;
-  const path = decodeURIComponent(url.slice(marker.length));
+  if (!parsedUrl.pathname.startsWith(marker)) return null;
+  const path = decodeURIComponent(parsedUrl.pathname.slice(marker.length));
   return path.startsWith("safi/") ? path : null;
 }
 
@@ -118,10 +139,16 @@ export async function deleteSafiImage(url: string) {
   const path = safiStoragePath(url);
   if (!path) return;
 
-  const [{ data: settings }, { data: menuItems }] = await Promise.all([
+  const [settingsResult, menuItemsResult] = await Promise.all([
     supabase.from("restaurant_settings").select("value"),
     supabase.from("menu_items").select("image_url"),
   ]);
+  if (settingsResult.error || menuItemsResult.error) {
+    console.error("[CMS] Unable to verify Safi image references:", settingsResult.error ?? menuItemsResult.error);
+    throw new Error("Impossible de vérifier les références de cette image.");
+  }
+  const settings = settingsResult.data;
+  const menuItems = menuItemsResult.data;
   const isReferencedBySettings = (settings ?? []).some((setting) => JSON.stringify(setting.value ?? {}).includes(url));
   const isReferencedByMenu = (menuItems ?? []).some((item) => item.image_url === url);
   if (isReferencedBySettings || isReferencedByMenu) return;
@@ -365,8 +392,8 @@ function jsonSetting(formData: FormData, key: string) {
   }
 }
 
-function isText(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0;
+function isText(value: unknown, maxLength: number, required = true) {
+  return typeof value === "string" && value.length <= maxLength && (!required || value.trim().length > 0);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -387,46 +414,51 @@ export async function updateSafiPageContent(formData: FormData): Promise<void> {
   const timeline = jsonArraySetting(
     formData,
     "safi_history_timeline",
-    (item) => isRecord(item) && isText(item.year) && isText(item.title) && typeof item.description === "string",
+    (item) => isRecord(item) && isText(item.year, 80) && isText(item.title, 200) && isText(item.description, 1200, false),
     30,
   );
   const patrimoineFacts = jsonArraySetting(
     formData,
     "safi_patrimoine_facts",
-    (item) => isRecord(item) && isText(item.label) && typeof item.description === "string",
+    (item) => isRecord(item) && isText(item.label, 120) && isText(item.description, 600, false),
     20,
   );
   const savoirFacts = jsonArraySetting(
     formData,
     "safi_savoir_facts",
-    (item) => isRecord(item) && isText(item.label) && typeof item.description === "string",
+    (item) => isRecord(item) && isText(item.label, 120) && isText(item.description, 600, false),
     20,
   );
   const galleryImages = jsonArraySetting(
     formData,
     "safi_gallery_images",
-    (item) => isRecord(item) && isText(item.url) && typeof item.alt === "string" && typeof item.caption === "string",
+    (item) => isRecord(item) && isText(item.url, 2048) && isText(item.alt, 300, false) && isText(item.caption, 300, false),
     30,
   );
-  const values = [
-    "safi_hero_eyebrow",
-    "safi_hero_title",
-    "safi_hero_description",
-    "safi_hero_image",
-    "safi_hero_image_alt",
-    "safi_history_eyebrow",
-    "safi_history_title",
-    "safi_history_description",
-    "safi_patrimoine_eyebrow",
-    "safi_patrimoine_title",
-    "safi_patrimoine_description",
-    "safi_savoir_eyebrow",
-    "safi_savoir_title",
-    "safi_savoir_description",
-    "safi_gallery_eyebrow",
-    "safi_gallery_title",
-    "safi_gallery_description",
-  ].map((key) => ({ key, value: { value: text(formData, key) }, updated_at: new Date().toISOString() }));
+  const valueFields: Array<[string, number]> = [
+    ["safi_hero_eyebrow", 120],
+    ["safi_hero_title", 200],
+    ["safi_hero_description", 1600],
+    ["safi_hero_image", 2048],
+    ["safi_hero_image_alt", 300],
+    ["safi_history_eyebrow", 120],
+    ["safi_history_title", 200],
+    ["safi_history_description", 1600],
+    ["safi_patrimoine_eyebrow", 120],
+    ["safi_patrimoine_title", 200],
+    ["safi_patrimoine_description", 1600],
+    ["safi_savoir_eyebrow", 120],
+    ["safi_savoir_title", 200],
+    ["safi_savoir_description", 1600],
+    ["safi_gallery_eyebrow", 120],
+    ["safi_gallery_title", 200],
+    ["safi_gallery_description", 1600],
+  ];
+  const values = valueFields.map(([key, maxLength]) => ({
+    key,
+    value: { value: safiText(formData, key, maxLength) },
+    updated_at: new Date().toISOString(),
+  }));
 
   const jsonValues = [
     ["safi_history_timeline", timeline],
