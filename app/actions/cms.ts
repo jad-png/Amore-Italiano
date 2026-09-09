@@ -116,7 +116,7 @@ function safiStoragePath(url: string) {
 export async function deleteSafiImage(url: string) {
   await assertAdmin();
   const path = safiStoragePath(url);
-  if (!path) throw new Error("Cette image Safi est invalide.");
+  if (!path) return;
 
   const { error } = await supabase.storage.from("menu-images").remove([path]);
   if (error) throw new Error("Impossible de supprimer cette image.");
@@ -357,15 +357,49 @@ function jsonSetting(formData: FormData, key: string) {
   }
 }
 
+function isText(value: unknown) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function jsonArraySetting(formData: FormData, key: string, isValid: (value: unknown) => boolean, maxItems: number) {
+  const value = jsonSetting(formData, key);
+  if (!Array.isArray(value) || value.length > maxItems || !value.every(isValid)) {
+    throw new Error(`Le champ ${key} contient des données invalides.`);
+  }
+  return value;
+}
+
 export async function updateSafiPageContent(formData: FormData): Promise<void> {
   await assertAdmin();
 
-  const jsonFields = [
+  const timeline = jsonArraySetting(
+    formData,
     "safi_history_timeline",
+    (item) => isRecord(item) && isText(item.year) && isText(item.title) && typeof item.description === "string",
+    30,
+  );
+  const patrimoineFacts = jsonArraySetting(
+    formData,
     "safi_patrimoine_facts",
+    (item) => isRecord(item) && isText(item.label) && typeof item.description === "string",
+    20,
+  );
+  const savoirFacts = jsonArraySetting(
+    formData,
     "safi_savoir_facts",
+    (item) => isRecord(item) && isText(item.label) && typeof item.description === "string",
+    20,
+  );
+  const galleryImages = jsonArraySetting(
+    formData,
     "safi_gallery_images",
-  ];
+    (item) => isRecord(item) && isText(item.url) && typeof item.alt === "string" && typeof item.caption === "string",
+    30,
+  );
   const values = [
     "safi_hero_eyebrow",
     "safi_hero_title",
@@ -385,9 +419,14 @@ export async function updateSafiPageContent(formData: FormData): Promise<void> {
     "safi_gallery_description",
   ].map((key) => ({ key, value: { value: text(formData, key) }, updated_at: new Date().toISOString() }));
 
-  const jsonValues = jsonFields.map((key) => ({
-    key,
-    value: { value: jsonSetting(formData, key) },
+  const jsonValues = [
+    ["safi_history_timeline", timeline],
+    ["safi_patrimoine_facts", patrimoineFacts],
+    ["safi_savoir_facts", savoirFacts],
+    ["safi_gallery_images", galleryImages],
+  ].map(([key, value]) => ({
+    key: String(key),
+    value: { value },
     updated_at: new Date().toISOString(),
   }));
   const { error } = await supabase.from("restaurant_settings").upsert([...values, ...jsonValues]);
