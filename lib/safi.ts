@@ -21,6 +21,7 @@ export type SafiContent = {
     title: string;
     description: string;
     image: string;
+    alt: string;
   };
   history: {
     eyebrow: string;
@@ -54,6 +55,7 @@ export const defaultSafiContent: SafiContent = {
     title: "L'histoire de Safi.",
     description: "Une ville tournée vers l'Atlantique, façonnée par son port, sa médina, ses remparts et son savoir-faire ancestral de la poterie.",
     image: "/images/amore-32-jpg.webp",
+    alt: "Architecture et patrimoine de Safi",
   },
   history: {
     eyebrow: "Un passé entre terre et mer",
@@ -143,6 +145,7 @@ export function readSafiContent(settings: Setting[]): SafiContent {
       title: stringValue(settings, "safi_hero_title", defaultSafiContent.hero.title),
       description: stringValue(settings, "safi_hero_description", defaultSafiContent.hero.description),
       image: stringValue(settings, "safi_hero_image", defaultSafiContent.hero.image),
+      alt: stringValue(settings, "safi_hero_image_alt", defaultSafiContent.hero.alt),
     },
     history: {
       eyebrow: stringValue(settings, "safi_history_eyebrow", defaultSafiContent.history.eyebrow),
