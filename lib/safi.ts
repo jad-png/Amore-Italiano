@@ -108,28 +108,29 @@ function settingValue(settings: Setting[], key: string) {
 
 function stringValue(settings: Setting[], key: string, fallback: string) {
   const value = settingValue(settings, key);
-  return typeof value === "string" ? value : fallback;
+  const normalized = typeof value === "string" ? value.trim() : "";
+  return normalized || fallback;
 }
 
 function factsValue(settings: Setting[], key: string, fallback: SafiFact[]) {
   const value = settingValue(settings, key);
   if (!Array.isArray(value)) return fallback;
-  return value.filter((item): item is SafiFact => Boolean(item) && typeof item === "object" && typeof item.label === "string" && typeof item.description === "string");
+  return value.filter((item): item is SafiFact => Boolean(item) && typeof item === "object" && typeof item.label === "string" && item.label.trim().length > 0 && typeof item.description === "string");
 }
 
 function timelineValue(settings: Setting[], fallback: SafiTimelineItem[]) {
   const value = settingValue(settings, "safi_history_timeline");
   if (!Array.isArray(value)) return fallback;
-  return value.filter((item): item is SafiTimelineItem => Boolean(item) && typeof item === "object" && typeof item.year === "string" && typeof item.title === "string" && typeof item.description === "string");
+  return value.filter((item): item is SafiTimelineItem => Boolean(item) && typeof item === "object" && typeof item.year === "string" && item.year.trim().length > 0 && typeof item.title === "string" && item.title.trim().length > 0 && typeof item.description === "string");
 }
 
 function imagesValue(settings: Setting[], fallback: SafiGalleryImage[]) {
   const value = settingValue(settings, "safi_gallery_images") ?? settingValue(settings, "safi_images");
   if (!Array.isArray(value)) return fallback;
   return value.flatMap((item): SafiGalleryImage[] => {
-    if (typeof item === "string") return [{ url: item, alt: "Photo de Safi", caption: "Safi" }];
-    if (item && typeof item === "object" && typeof item.url === "string") {
-      return [{ url: item.url, alt: typeof item.alt === "string" ? item.alt : "Photo de Safi", caption: typeof item.caption === "string" ? item.caption : "Safi" }];
+    if (typeof item === "string" && item.trim()) return [{ url: item.trim(), alt: "Photo de Safi", caption: "Safi" }];
+    if (item && typeof item === "object" && typeof item.url === "string" && item.url.trim()) {
+      return [{ url: item.url.trim(), alt: typeof item.alt === "string" && item.alt.trim() ? item.alt.trim() : "Photo de Safi", caption: typeof item.caption === "string" && item.caption.trim() ? item.caption.trim() : "Safi" }];
     }
     return [];
   });
