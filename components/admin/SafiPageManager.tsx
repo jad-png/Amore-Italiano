@@ -10,7 +10,7 @@ import type { SafiContent, SafiFact, SafiGalleryImage, SafiTimelineItem } from "
 export default function SafiPageManager({ initialContent }: { initialContent: SafiContent }) {
   const [content, setContent] = useState(initialContent);
   const [uploading, setUploading] = useState(false);
-  const [deletingUrl, setDeletingUrl] = useState<string | null>(null);
+  const [removedUrls, setRemovedUrls] = useState<string[]>([]);
   const [saving, startSaving] = useTransition();
 
   function updateSection<K extends keyof SafiContent>(section: K, key: keyof SafiContent[K], value: string) {
@@ -31,6 +31,9 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
     setUploading(true);
     try {
       const url = await uploadImage(file);
+      if (content.hero.image && content.hero.image !== url) {
+        setRemovedUrls((current) => [...new Set([...current, content.hero.image])]);
+      }
       updateSection("hero", "image", url);
       toast.success("Image principale remplacée.");
     } catch (error) {
@@ -64,18 +67,9 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
   }
 
   function removeGalleryImage(url: string) {
-    setDeletingUrl(url);
-    startSaving(async () => {
-      try {
-        await deleteSafiImage(url);
-        setContent((current) => ({ ...current, gallery: { ...current.gallery, images: current.gallery.images.filter((image) => image.url !== url) } }));
-        toast.success("Photo supprimée de la galerie.");
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Impossible de supprimer cette photo.");
-      } finally {
-        setDeletingUrl(null);
-      }
-    });
+    setContent((current) => ({ ...current, gallery: { ...current.gallery, images: current.gallery.images.filter((image) => image.url !== url) } }));
+    setRemovedUrls((current) => [...new Set([...current, url])]);
+    toast.success("Photo retirée. Enregistrez la page pour confirmer.");
   }
 
   function moveGalleryImage(index: number, direction: -1 | 1) {
@@ -129,7 +123,13 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
     startSaving(async () => {
       try {
         await updateSafiPageContent(formData);
-        toast.success("La page Safi a été enregistrée.");
+        const cleanup = await Promise.allSettled(removedUrls.map((url) => deleteSafiImage(url)));
+        setRemovedUrls([]);
+        if (cleanup.some((result) => result.status === "rejected")) {
+          toast.warning("La page est enregistrée, mais certaines anciennes images n'ont pas pu être supprimées du stockage.");
+        } else {
+          toast.success("La page Safi a été enregistrée.");
+        }
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "Impossible d'enregistrer la page Safi.");
       }
@@ -212,7 +212,7 @@ export default function SafiPageManager({ initialContent }: { initialContent: Sa
                 <Field label="Texte alternatif" value={image.alt} onChange={(value) => setContent((current) => ({ ...current, gallery: { ...current.gallery, images: current.gallery.images.map((item, itemIndex) => itemIndex === index ? { ...item, alt: value } : item) } }))} />
                 <div className="flex items-center justify-between pt-1">
                   <div className="flex gap-1"><IconButton label="Monter" disabled={index === 0} onClick={() => moveGalleryImage(index, -1)}><ChevronUp size={16} /></IconButton><IconButton label="Descendre" disabled={index === content.gallery.images.length - 1} onClick={() => moveGalleryImage(index, 1)}><ChevronDown size={16} /></IconButton></div>
-                  <IconButton label="Supprimer" disabled={deletingUrl === image.url || saving} onClick={() => removeGalleryImage(image.url)} danger>{deletingUrl === image.url ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}</IconButton>
+                  <IconButton label="Supprimer" disabled={saving} onClick={() => removeGalleryImage(image.url)} danger><Trash2 size={16} /></IconButton>
                 </div>
               </div>
             </div>
