@@ -10,20 +10,22 @@ const key =
 const host =
   process.env.NEXT_PUBLIC_POSTHOG_HOST ||
   process.env.PUBLIC_POSTHOG_HOST ||
-  "";
-
-if (typeof window !== "undefined" && key && !posthog.__loaded) {
-  posthog.init(key, {
-    api_host: host,
-    capture_pageview: "history_change",
-    capture_pageleave: true,
-  });
-}
+  "https://us.i.posthog.com";
 
 export default function Providers({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const { isLoaded, user } = useUser();
+
+  useEffect(() => {
+    if (!key || posthog.__loaded) return;
+
+    posthog.init(key, {
+      api_host: host,
+      capture_pageview: "history_change",
+      capture_pageleave: true,
+    });
+  }, []);
 
   useEffect(() => {
     if (!isLoaded || !key) return;

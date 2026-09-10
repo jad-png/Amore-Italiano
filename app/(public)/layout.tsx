@@ -22,15 +22,17 @@ export default function PublicLayout({
   };
 
   return (
-    <Providers>
-      <Navbar />
-      <main className="page-shell">{children}</main>
-      <Footer />
-      <WorkModal />
+    <>
+      <Providers>
+        <Navbar />
+        <main className="page-shell">{children}</main>
+        <Footer />
+        <WorkModal />
+      </Providers>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
       />
-    </Providers>
+    </>
   );
 }
