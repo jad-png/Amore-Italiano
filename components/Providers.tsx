@@ -3,14 +3,8 @@
 import { PostHogProvider } from "posthog-js/react";
 import posthog from "posthog-js";
 import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
-
-const key =
-  process.env.NEXT_PUBLIC_POSTHOG_KEY || process.env.PUBLIC_POSTHOG_KEY;
-const host =
-  process.env.NEXT_PUBLIC_POSTHOG_HOST ||
-  process.env.PUBLIC_POSTHOG_HOST ||
-  "https://us.i.posthog.com";
+import { Suspense, useEffect } from "react";
+import PostHogPageView from "@/components/PostHogPageView";
 
 export default function Providers({
   children,
@@ -18,16 +12,23 @@ export default function Providers({
   const { isLoaded, user } = useUser();
 
   useEffect(() => {
+    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+    const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+
+    console.log("PostHog Init Key:", key ? "EXISTS" : "MISSING");
+
     if (!key || posthog.__loaded) return;
 
     posthog.init(key, {
       api_host: host,
-      capture_pageview: "history_change",
+      capture_pageview: false,
       capture_pageleave: true,
     });
   }, []);
 
   useEffect(() => {
+    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+
     if (!isLoaded || !key) return;
 
     const configuredAdminUserId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
@@ -48,5 +49,12 @@ export default function Providers({
     }
   }, [isLoaded, user]);
 
-  return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
+  return (
+    <PostHogProvider client={posthog}>
+      <Suspense fallback={null}>
+        <PostHogPageView />
+      </Suspense>
+      {children}
+    </PostHogProvider>
+  );
 }
