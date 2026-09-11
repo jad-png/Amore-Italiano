@@ -45,6 +45,7 @@ export default function Navbar() {
           width={940}
           height={327}
           sizes="(max-width: 768px) 78px, 190px"
+          priority
           className="h-12 w-[78px] object-contain object-left md:h-[68px] md:w-[190px]"
         />
       </a>
