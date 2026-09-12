@@ -21,9 +21,14 @@ export default function Providers({
     if (!posthog.__loaded) {
       posthog.init(key, {
         api_host: "/ingest",
+        asset_host: "/ingest",
         ui_host: "https://eu.posthog.com",
         capture_pageview: false,
         capture_pageleave: true,
+        debug: true,
+        loaded: (ph) => {
+          console.log("PostHog loaded successfully");
+        },
       });
     }
 
