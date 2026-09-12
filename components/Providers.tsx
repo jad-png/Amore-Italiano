@@ -25,9 +25,13 @@ export default function Providers({
         ui_host: "https://eu.posthog.com",
         capture_pageview: false,
         capture_pageleave: true,
-        debug: true,
+        disable_session_recording: false,
+        session_recording: {
+          maskAllInputs: true,
+          maskTextSelector: "*[data-mask]",
+        },
         loaded: (ph) => {
-          console.log("PostHog loaded successfully");
+          if (process.env.NODE_ENV === "development") ph.debug();
         },
       });
     }
