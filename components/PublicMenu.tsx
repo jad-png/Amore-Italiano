@@ -65,12 +65,12 @@ export default function PublicMenu({ categories, items }: { categories: Category
       </div>
       <div className="grid grid-cols-1 gap-[14px] md:grid-cols-2">
         {visibleItems.map((item) => (
-          <article key={item.id} className="flex justify-between gap-5 border-b border-[#ded8cc] py-5">
-            <div>
-              <h3 className="serif text-[21px]">{item.name}</h3>
+          <article key={item.id} className="flex min-w-0 justify-between gap-5 border-b border-[#ded8cc] py-5">
+            <div className="min-w-0 flex-1">
+              <h3 className="serif break-words text-[21px]">{item.name}</h3>
               <p className="mt-1 block text-[13px] text-[#6e6a61]">{item.description}</p>
             </div>
-            <strong className="price whitespace-nowrap font-bold text-[#a92e27]">{formatItemPrice(item)}</strong>
+            <strong className="price shrink-0 whitespace-nowrap text-right font-bold text-[#a92e27]">{formatItemPrice(item)}</strong>
           </article>
         ))}
       </div>

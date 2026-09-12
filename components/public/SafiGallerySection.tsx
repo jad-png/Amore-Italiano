@@ -24,12 +24,12 @@ export default function SafiGallerySection({ title, description, buttonText, but
   }
 
   return (
-    <section id="safi" className="bg-[#f7f2e8] py-25">
-      <div className="mx-auto grid w-[92%] max-w-[1180px] items-center gap-12 md:grid-cols-2">
-        <div className="relative overflow-hidden rounded-xl bg-[#e8e1d4]">
-          <div className="flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
+    <section id="safi" className="overflow-x-clip bg-[#f7f2e8] py-25">
+      <div className="mx-auto grid min-w-0 w-[92%] max-w-[1180px] items-center gap-12 md:grid-cols-2">
+        <div className="relative min-w-0 w-full max-w-full overflow-hidden rounded-xl bg-[#e8e1d4]">
+          <div className="flex w-full min-w-0 max-w-full transition-transform duration-500 ease-out" style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
             {slides.map((image, index) => (
-              <div key={`${image}-${index}`} className="relative min-w-full aspect-[4/3] md:aspect-[3/4]">
+              <div key={`${image}-${index}`} className="relative w-full min-w-0 shrink-0 aspect-[4/3] md:aspect-[3/4]">
                 <Image src={image} alt={`${title} — image ${index + 1}`} fill sizes="(max-width: 768px) 92vw, 50vw" className="object-cover" priority={index === 0} />
               </div>
             ))}
@@ -52,9 +52,9 @@ export default function SafiGallerySection({ title, description, buttonText, but
           )}
         </div>
 
-        <div>
+        <div className="min-w-0">
           <div className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-[#a92e27]">Ciao, Safi.</div>
-          <h2 className="serif text-6xl leading-none">{title}</h2>
+          <h2 className="serif break-words text-[clamp(42px,12vw,60px)] leading-none">{title}</h2>
           <p className="mt-6 max-w-[560px] text-[#4a4741]">{description}</p>
           <Link className="mt-6 inline-block rounded-full bg-[#a92e27] px-6 py-3 text-sm font-bold !text-white" href={buttonLink || "/safi"}>
             {buttonText || "DÉCOUVRIR SAFI"}

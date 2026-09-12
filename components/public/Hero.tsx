@@ -21,12 +21,12 @@ export default function Hero() {
         aria-hidden="true"
       />
       <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(0,0,0,.68)_0%,rgba(0,0,0,.40)_48%,rgba(0,0,0,.20)_100%),linear-gradient(0deg,rgba(0,0,0,.42),transparent_48%)]" />
-      <div className="relative z-[2] mx-auto w-[92%] max-w-[1180px] py-32">
+      <div className="relative z-[2] mx-auto min-w-0 w-[92%] max-w-[1180px] py-32">
         <Reveal>
           <div className="mb-5 text-xs font-bold uppercase tracking-[.2em] drop-shadow-[0_2px_12px_rgba(0,0,0,.35)]">
             Ristorante · Caffè · Gelateria
           </div>
-          <h1 className="serif max-w-[900px] text-[clamp(58px,8vw,112px)] leading-[.92] tracking-[-.04em] drop-shadow-[0_3px_24px_rgba(0,0,0,.38)]">
+          <h1 className="serif max-w-[900px] break-words text-[clamp(58px,8vw,112px)] leading-[.92] tracking-[-.04em] drop-shadow-[0_3px_24px_rgba(0,0,0,.38)]">
             L&apos;Italie,
             <br />
             au cœur de <em>Safi.</em>

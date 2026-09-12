@@ -8,14 +8,14 @@ export default function SectionHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="mb-11 flex items-end justify-between gap-7 max-md:block">
-      <div>
+    <div className="mb-11 flex min-w-0 items-end justify-between gap-7 max-md:block">
+      <div className="min-w-0">
         {kicker && (
           <div className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-[#a92e27]">
             {kicker}
           </div>
         )}
-        <h2 className="serif text-[clamp(42px,6vw,70px)] leading-none">
+        <h2 className="serif break-words text-[clamp(42px,6vw,70px)] leading-none">
           {title}
         </h2>
       </div>
