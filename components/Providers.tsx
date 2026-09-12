@@ -42,20 +42,7 @@ export default function Providers({
   }, []);
 
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-
-    if (!isLoaded || !key) return;
-
-    const configuredAdminUserId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
-    const configuredAdminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
-      .split(",")
-      .map((email) => email.trim().toLowerCase())
-      .filter(Boolean);
-    const userEmail = user?.primaryEmailAddress?.emailAddress.toLowerCase();
-    const isAdmin =
-      user?.publicMetadata?.role === "admin" ||
-      user?.id === configuredAdminUserId ||
-      Boolean(userEmail && configuredAdminEmails.includes(userEmail));
+    const isAdmin = Boolean(isLoaded && user && user.publicMetadata?.role === "admin");
 
     if (isAdmin) {
       posthog.opt_out_capturing();
