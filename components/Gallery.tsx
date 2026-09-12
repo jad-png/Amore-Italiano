@@ -13,7 +13,7 @@ export default function Gallery() {
   const [expanded, setExpanded] = useState(false);
   return (
     <>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1.25fr_.75fr_.95fr] lg:grid-rows-[280px_280px]">
+      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1.25fr_.75fr_.95fr] lg:grid-rows-[280px_280px]">
       {images.map(([image, width, height], i) => (
         <a
           key={image}
